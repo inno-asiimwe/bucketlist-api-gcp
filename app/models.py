@@ -45,6 +45,7 @@ class Bucketlist(db.Model):
     name = db.Column(db.String(256), nullable=False, unique=True)
     description = db.Column(db.Text)
     owner = db.Column(db.Integer, db.ForeignKey(User.id))
+    items = db.relationship('Item', backref='Bucketlist')
 
     def __init__(self, name, description, owner):
         """Initialising the bucketlist"""

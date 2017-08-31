@@ -75,10 +75,10 @@ class Bucketlist(db.Model):
 class Item(db.Model):
     """Class to define the Items table"""
     __tablename__ = 'items'
-    id = db.Column(db.Integr, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(256), nullable=False, unique=True)
     description = db.Column(db.Text)
-    bucketlist_id = db.Column(db.Integer, db.ForeignKey('Bucketlist.id'))
+    bucketlist_id = db.Column(db.Integer, db.ForeignKey(Bucketlist.id))
 
     def __init__(self, name, description, bucketlist_id):
         """Initialising an item"""

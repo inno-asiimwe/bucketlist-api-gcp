@@ -10,6 +10,7 @@ class User(db.Model):
     username = db.Column(db.String(256), nullable=False, unique=True)
     password = db.Column(db.String(256), nullable=False)
     email = db.Column(db.String(256), nullable=False, unique=True)
+    bucketlists = db.relationship('Bucketlist', backref='User')
 
     def __init__(self, firstname, lastname, username, password, email):
         """Initialising the user"""
@@ -17,3 +18,56 @@ class User(db.Model):
         self.lastname = lastname
         self.username = username
         self.password = Bcrypt.generate_password_hash(password).decode()
+        self.email = email
+
+    def password_is_valid(self, password):
+        """Method validates password against its harsh"""
+        return Bcrypt().check_password_hash(self.password, password)
+
+    def save(self):
+        """Method saves user to the database"""
+        db.session.add(self)
+        db.session.commit()
+
+    def delete(self):
+        """Method deletes user from database"""
+        db.session.remove(self)
+        db.commit()
+
+    def __repr__(self):
+        """ """
+        return '<User %r>' %(self.name)
+
+class Bucketlist(db.Model):
+    """Class to define the bucketlists table"""
+    __tablename__ = 'bucketlists'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(256), nullable=False, unique=True)
+    description = db.Column(db.Text)
+    owner = db.Column(db.Integer, db.ForeignKey(User.id))
+
+    def __init__(self, name, description, owner):
+        """Initialising the bucketlist"""
+        self.name = name
+        self.description = description
+        self.owner = owner
+
+    def save(self):
+        """Method to save bucketlist to database"""
+        db.session.add(self)
+        db.session.commit()
+
+    def delete(self):
+        """Method to delete bucketlist from database"""
+        db.session.remove(self)
+        db.seession.commit()
+
+    @staticmethod
+    def get_all_bucketlists(owner_id):
+        """Method returns all bucketlists owned by a given user"""
+        return Bucketlist.query.filter_by(owner=owner_id)
+
+    def __repr__(self):
+        """A representation for an instance of a bucketlist"""
+        return '<Bucketlist: %r>' %(self.name)
+

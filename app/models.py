@@ -72,3 +72,37 @@ class Bucketlist(db.Model):
         """A representation for an instance of a bucketlist"""
         return '<Bucketlist: %r>' %(self.name)
 
+class Item(db.Model):
+    """Class to define the Items table"""
+    __tablename__ = 'items'
+    id = db.Column(db.Integr, primary_key=True)
+    name = db.Column(db.String(256), nullable=False, unique=True)
+    description = db.Column(db.Text)
+    bucketlist_id = db.Column(db.Integer, db.ForeignKey('Bucketlist.id'))
+
+    def __init__(self, name, description, bucketlist_id):
+        """Initialising an item"""
+        self.name = name
+        self.description = description
+        self.bucketlist_id = bucketlist_id
+
+    def __repr__(self):
+        """Method to represent an instance of the item"""
+        return '<Item: %r>' %(self.name)
+
+    def save(self):
+        """Method to save item to database"""
+        db.session.add(self)
+        db.session.commit()
+
+    def delete(self):
+        """Method to delete item from database"""
+        db.session.remove(self)
+        db.seession.commit()
+    
+    @staticmethod
+    def get_all_items(bucketlist_id):
+        """Method returns all items in a given bucketlist"""
+        return Item.query.filter_by(bucketlist_id=bucketlist_id)
+
+

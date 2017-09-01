@@ -10,13 +10,12 @@ class TestDevelopmentConfig(TestCase):
         """Creating a development app"""
         app = create_app(config_name='development')
         return app
-    #app = create_app()
 
     def test_app_is_development(self):
         """
         Method ensures app is using development configurations
         Running in debug mode 
-        Usiing the correct database_url and secret
+        Using the bucketlist_api database and secret
         """
         self.assertTrue(self.app.config['SECRET'] == 'My-secret-a-long-string')
         self.assertTrue(self.app.config['DEBUG'])
@@ -25,3 +24,43 @@ class TestDevelopmentConfig(TestCase):
             self.app.config['SQLALCHEMY_DATABASE_URI'] ==
             'postgresql://postgres:admin@localhost/bucketlist_api'
         )
+
+class TestTestingConfig(TestCase):
+    """Class to test testing configurations"""
+    def create_app(self):
+        """Creating a test app"""
+        app = create_app(config_name='testing')
+        return app
+
+    def test_app_is_testing(self):
+        """
+        Method ensures app is using testing configurations
+        Running in debug mode
+        Running in testing mode 
+        using the test database
+        using the correcrt secret key
+        """
+        self.assertTrue(self.app.config['DEBUG'])
+        self.assertTrue(self.app.config['TESTING'])
+        self.assertFalse(current_app is None)
+        self.assertTrue(self.app.config['SECRET'] == 'My-secret-a-long-string')
+        self.assertTrue(
+            self.app.config['SQLALCHEMY_DATABASE_URI'] ==
+            'postgresql://postgres:admin@localhost/test_db'
+            )
+
+class TestStagingConfig(TestCase):
+    """Class to test the staging config"""
+    def create_app(self):
+        """Creating a staging app"""
+        app = create_app(config_name='staging')
+        return app
+
+    def test_app_is_staging(self):
+        """ """
+        self.assertTrue(self.app.config['DEBUG'])
+        self.assertTrue(self.app.config['SECRET'] == 'My-secret-a-long-string')
+        self.assertTrue(
+            self.app.config['SQLALCHEMY_DATABASE_URI'] == 
+            'postgresql://postgres:admin@localhost/bucketlist_api')
+        

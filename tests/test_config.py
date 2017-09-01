@@ -63,4 +63,20 @@ class TestStagingConfig(TestCase):
         self.assertTrue(
             self.app.config['SQLALCHEMY_DATABASE_URI'] == 
             'postgresql://postgres:admin@localhost/bucketlist_api')
+
+class TestProductionConfig(TestCase):
+    """Class to test Production configurations"""
+    def create_app(self):
+        """creating a production app"""
+        app = create_app(config_name='production')
+        return app
+    def test_app_is_production(self):
+        """ """
+        self.assertFalse(self.app.config['DEBUG'])
+        self.assertFalse(self.app.config['TESTING'])
+        self.assertTrue(self.app.config['SECRET'] == 'My-secret-a-long-string')
+        self.assertTrue(
+            self.app.config['SQLALCHEMY_DATABASE_URI'] ==
+            'postgresql://postgres:admin@localhost/bucketlist_api')
+
         

@@ -5,7 +5,7 @@ class Config:
     """The Parent configurations for the app"""
     DEBUG = False
     CSRF_ENABLED = True
-    SECRET = os.urandom(24)
+    SECRET = 'My-secret-a-long-string'
     SQLALCHEMY_DATABASE_URI = 'postgresql://postgres:admin@localhost/bucketlist_api'
 
 class DevelopmentConfig(Config):

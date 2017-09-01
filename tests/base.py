@@ -7,7 +7,8 @@ class BaseTestCase(TestCase):
 
     def create_app(self):
         """Method creates app for testing purposes"""
-        create_app(config_name='testing')
+        app = create_app(config_name='testing')
+        return app
 
     def setUp(self):
         """Method executed before every test to setup the test database"""

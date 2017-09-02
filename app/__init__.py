@@ -1,6 +1,7 @@
 from flask_api import FlaskAPI 
 from flask_sqlalchemy import SQLAlchemy 
 from instance.config import app_config
+from .auth import auth_blueprint
 
 
 db = SQLAlchemy()
@@ -14,4 +15,6 @@ def create_app(config_name):
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
     db.init_app(app)
+    app.register_blueprint(auth_blueprint)
+
     return app

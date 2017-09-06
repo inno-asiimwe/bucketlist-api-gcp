@@ -78,8 +78,9 @@ class TestAuth(BaseTestCase):
         )
         data = json.loads(response.data.decode())
         self.assertEqual(response.status_code, 200)
-        self.assertIn('succesfully logged in', data['message'])
+        self.assertIn('Succesfully logged in', data['message'])
         self.assertIn('Success', data['status'])
+        self.assertTrue(data['auth_token'])
 
     def test_login_unregistered(self):
         """Tests an unregistered user cannot login"""
@@ -96,6 +97,7 @@ class TestAuth(BaseTestCase):
             self.assertEqual(response.status_code, 401)
             self.assertIn("Failed to login, unknown username or password", data['message'])
             self.assertIn('Failed', data['status'])
+            
 
     def test_login_wrong_password(self):
         """Tests user cannot login in with wrong password"""
@@ -122,8 +124,5 @@ class TestAuth(BaseTestCase):
             )
             data = json.loads(response.data.decode())
             self.assertEqual(response.status_code, 401)
-            self.aasertIn("Faile to login, unknown username or password", data['message'])
+            self.assertIn("Failed to login, unknown username or password", data['message'])
             self.assertIn('Failed', data['status'])
-
-
-

@@ -1,5 +1,8 @@
 from app import db
-from flask_bcrypt import Bcrypt 
+from flask_bcrypt import Bcrypt
+from flask import current_app
+import jwt
+import datetime
 
 class User(db.Model):
     """Class to define the users table"""
@@ -24,6 +27,23 @@ class User(db.Model):
         """Method validates password against its harsh"""
         return Bcrypt().check_password_hash(self.password, password)
 
+    def encode_auth_token(self, user_id):
+        """Generates an authentication token"""
+        try:
+            payload = {
+                'exp':datetime.datetime.utcnow() + datetime.timedelta(minutes=5),
+                'iat':datetime.datetime.utcnow(),
+                'sub':user_id
+            }
+            jwt_string = jwt.encode(
+                payload,
+                current_app.config.get('SECRET'),
+                algorithm='HS256'
+                )
+            return jwt_string
+        except Exception as e:
+            return str(e)
+
     def save(self):
         """Method saves user to the database"""
         db.session.add(self)
@@ -37,6 +57,20 @@ class User(db.Model):
     def __repr__(self):
         """ """
         return '<User %r>' %(self.name)
+
+    @staticmethod
+    def decode_auth_token(token):
+        """Method decodes authentication token"""
+        try:
+            payload = jwt.decode(
+                token,
+                current_app.config.get('SECRET')
+                )
+            return payload['sub']
+        except jwt.ExpiredSignatureError:
+            return 'Expired token'
+        except jwt.InvalidTokenError:
+            return 'Invalid token'
 
 class Bucketlist(db.Model):
     """Class to define the bucketlists table"""

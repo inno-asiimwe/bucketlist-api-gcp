@@ -12,7 +12,7 @@ class BaseTestCase(TestCase):
 
     def setUp(self):
         """Method executed before every test to setup the test database"""
-        self.app_context = self.app.app_context
+        self.app_context = self.app.app_context()
         self.app_context.push()
         db.create_all()
         db.session.commit()

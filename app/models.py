@@ -17,7 +17,7 @@ class User(db.Model):
         self.firstname = firstname
         self.lastname = lastname
         self.username = username
-        self.password = Bcrypt.generate_password_hash(password).decode()
+        self.password = Bcrypt().generate_password_hash(password).decode()
         self.email = email
 
     def password_is_valid(self, password):

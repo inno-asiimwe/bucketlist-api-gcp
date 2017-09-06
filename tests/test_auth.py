@@ -50,4 +50,6 @@ class TestAuth(BaseTestCase):
             content_type='application/json'
             )
             data = json.loads(response.data.decode())
-            self.assertEqual(response.status_code, 400)
+            self.assertEqual(response.status_code, 202)
+            self.assertIn('Failed to register, duplicate user', data['message'])
+            self.assertIn('Failed!!', data['status'])

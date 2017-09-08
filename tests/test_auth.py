@@ -152,14 +152,14 @@ class TestAuth(BaseTestCase):
             data = json.loads(response.data.decode())
             self.assertEqual(res_register.status_code, 201)
             self.assertEqual(response.status_code, 200)
-            self.assertIn('Successfully changed password', data['Message'])
+            self.assertIn('Successfully changed password', data['message'])
             self.assertIn('Success', data['status'])
 
     def test_reset_password_unknownuser(self):
         """Tests failure in case of unregistered user"""
         with self.client:
             response = self.client.post(
-                '/auh/reset-password',
+                '/auth/reset-password',
                 data=json.dumps(dict(
                     username='inno',
                     old_password='pass',
@@ -197,7 +197,7 @@ class TestAuth(BaseTestCase):
                 content_type='application/json'
             )
 
-            data = json.dumps(response.data.decode())
+            data = json.loads(response.data.decode())
             self.assertEqual(res_register.status_code, 201)
             self.assertEqual(response.status_code, 400)
             self.assertIn('Failed to reset password, bad username or password', data['message'])

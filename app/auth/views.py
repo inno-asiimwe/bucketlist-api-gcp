@@ -2,6 +2,7 @@ from . import auth_blueprint
 from flask import make_response, jsonify , request
 from app.models import User
 import jwt
+from flask_bcrypt import Bcrypt
 
 @auth_blueprint.route('/register', methods=['POST'])
 def register_user():
@@ -54,3 +55,22 @@ def login_user():
         'status': 'Failed'
     }
     return make_response(jsonify(response)), 401
+
+@auth_blueprint.route('/reset-password', methods=['POST'])
+def reset_password():
+    """Function handles resetting a password for a given user"""
+    user = User.query.filter_by(username=request.data['username']).first()
+
+    if user and user.password_is_valid(request.data['old_password']):
+        user.password = Bcrypt().generate_password_hash(password=request.data['new_password'])
+        user.save()
+        response = {
+            'message': 'Successfully changed password',
+            'status': 'Success'
+        }
+        return make_response(jsonify(response)), 200
+    response = {
+        'message': 'Failed to reset password, bad username or password',
+        'status': 'Failed'
+    }
+    return make_response(jsonify(response)), 400

@@ -57,7 +57,7 @@ class TestAuth(BaseTestCase):
         """Tests a successful login"""
         with self.client:
             res = self.client.post(
-                'auth/register',
+                '/auth/register',
                 data=json.dumps(dict(
                     firstname='Innocent',
                     lastname='Asiimwe',
@@ -69,7 +69,7 @@ class TestAuth(BaseTestCase):
             )
         self.assertEqual(res.status_code, 201)
         response = self.client.post(
-            'auth/login',
+            '/auth/login',
             data=json.dumps(dict(
                 username='inno',
                 password='pass'
@@ -97,12 +97,11 @@ class TestAuth(BaseTestCase):
             self.assertEqual(response.status_code, 401)
             self.assertIn("Failed to login, unknown username or password", data['message'])
             self.assertIn('Failed', data['status'])
-            
 
     def test_login_wrong_password(self):
         """Tests user cannot login in with wrong password"""
         with self.client:
-            res= self.client.post(
+            res = self.client.post(
                 '/auth/register',
                 data=json.dumps(dict(
                     firstname='Innocent',
@@ -111,7 +110,7 @@ class TestAuth(BaseTestCase):
                     password='pass',
                     email='asiimwe@outlook.com'
                     )),
-                    content_type='application/json'
+                content_type='application/json'
             )
             self.assertEqual(res.status_code, 201)
             response = self.client.post(
@@ -125,4 +124,81 @@ class TestAuth(BaseTestCase):
             data = json.loads(response.data.decode())
             self.assertEqual(response.status_code, 401)
             self.assertIn("Failed to login, unknown username or password", data['message'])
+            self.assertIn('Failed', data['status'])
+
+    def test_reset_password_success(self):
+        """Tests a successful reset of the password"""
+        with self.client:
+            res_register = self.client.post(
+                '/auth/register',
+                data=json.dumps(dict(
+                    firstname='Innocent',
+                    lastname='Asiimwe',
+                    username="inno",
+                    password='pass',
+                    email='asiimwe@outlook.com'
+                )),
+                content_type='application/json'
+            )
+            response = self.client.post(
+                '/auth/reset-password',
+                data=json.dumps(dict(
+                    username='inno',
+                    old_password='pass',
+                    new_password='newpass'
+                )),
+                content_type='application/json'
+            )
+            data = json.loads(response.data.decode())
+            self.assertEqual(res_register.status_code, 201)
+            self.assertEqual(response.status_code, 200)
+            self.assertIn('Successfully changed password', data['Message'])
+            self.assertIn('Success', data['status'])
+
+    def test_reset_password_unknownuser(self):
+        """Tests failure in case of unregistered user"""
+        with self.client:
+            response = self.client.post(
+                '/auh/reset-password',
+                data=json.dumps(dict(
+                    username='inno',
+                    old_password='pass',
+                    new_password='newpass'
+                )),
+                content_type='application/json'
+            )
+            data = json.loads(response.data.decode())
+            self.assertEqual(response.status_code, 400)
+            self.assertIn('Failed to reset password, bad username or password', data['message'])
+            self.assertIn('Failed', data['status'])
+
+    def test_reset_password_wrongpassword(self):
+        """Tests failure incase of wrong password"""
+        with self.client:
+            res_register = self.client.post(
+                '/auth/register',
+                data=json.dumps(dict(
+                    firstname='inno',
+                    lastname='asiimwe',
+                    username='inno',
+                    password='pass',
+                    email='asiimwe@outlook.com'
+                )),
+                content_type='application/json'
+            )
+
+            response = self.client.post(
+                '/auth/reset-password',
+                data=json.dumps(dict(
+                    username='inno',
+                    old_password='password',
+                    new_password='newpass'
+                )),
+                content_type='application/json'
+            )
+
+            data = json.dumps(response.data.decode())
+            self.assertEqual(res_register.status_code, 201)
+            self.assertEqual(response.status_code, 400)
+            self.assertIn('Failed to reset password, bad username or password', data['message'])
             self.assertIn('Failed', data['status'])

@@ -66,6 +66,9 @@ class User(db.Model):
                 token,
                 current_app.config.get('SECRET')
                 )
+            token_blacklisted = BlacklistToken.blacklisted(token)
+            if token_blacklisted:
+                return 'Token no longer valid login again'
             return payload['sub']
         except jwt.ExpiredSignatureError:
             return 'Expired token'
@@ -133,8 +136,39 @@ class Item(db.Model):
         """Method to delete item from database"""
         db.session.remove(self)
         db.seession.commit()
-        
     @staticmethod
     def get_all_items(bucketlist_id):
         """Method returns all items in a given bucketlist"""
         return Item.query.filter_by(bucketlist_id=bucketlist_id)
+
+class BlacklistToken(db.Model):
+    """
+    Model for storing expired jwt tokens
+
+    """
+    __tablename__ = 'blacklist_token'
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    tokken = db.Column(db.String, unique=True, nullable=False)
+
+    def __init__(self, token):
+        """ """
+        self.token = token
+
+    def save(self):
+        """Save token in database """
+        db.session.add(self)
+        db.commit()
+
+    def __repr__(self):
+        """ """
+        return '<token: {}'.format(self.token)
+
+    @staticmethod
+    def blacklisted(token):
+        """Returns whether the a token is blacklisted or not """
+        token = BlacklistToken.query.filter_by(token=str(token)).first()
+        if token:
+            return True
+        return False
+     
+          

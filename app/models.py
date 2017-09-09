@@ -31,7 +31,7 @@ class User(db.Model):
         """Generates an authentication token"""
         try:
             payload = {
-                'exp':datetime.datetime.utcnow() + datetime.timedelta(minutes=5),
+                'exp':datetime.datetime.utcnow() + datetime.timedelta(seconds=5),
                 'iat':datetime.datetime.utcnow(),
                 'sub':user_id
             }
@@ -133,10 +133,8 @@ class Item(db.Model):
         """Method to delete item from database"""
         db.session.remove(self)
         db.seession.commit()
-    
+        
     @staticmethod
     def get_all_items(bucketlist_id):
         """Method returns all items in a given bucketlist"""
         return Item.query.filter_by(bucketlist_id=bucketlist_id)
-
-

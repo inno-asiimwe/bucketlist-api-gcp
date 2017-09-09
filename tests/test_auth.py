@@ -241,7 +241,7 @@ class TestAuth(BaseTestCase):
             self.assertEqual(res_login.status_code, 200)
             self.assertEqual(response.status_code, 200)
             self.assertIn('Successfully logged out', data['message'])
-            self.assertIn('success', data['status'])
+            self.assertIn('Success', data['status'])
 
     def test_logout_expired_token(self):
         """Tests failure incase the auth_token has expired"""
@@ -281,5 +281,5 @@ class TestAuth(BaseTestCase):
             self.assertEqual(res_register.status_code, 201)
             self.assertEqual(res_login.status_code, 200)
             self.assertEqual(response.status_code, 401)
-            self.assertIn("Failed to logout, Expired token", data['message'])
+            self.assertIn("Failed to logout, Invalid token", data['message'])
             self.assertIn("Failed", data['status'])

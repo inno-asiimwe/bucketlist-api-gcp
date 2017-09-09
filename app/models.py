@@ -148,7 +148,7 @@ class BlacklistToken(db.Model):
     """
     __tablename__ = 'blacklist_token'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    tokken = db.Column(db.String, unique=True, nullable=False)
+    token = db.Column(db.String, unique=True, nullable=False)
 
     def __init__(self, token):
         """ """
@@ -157,7 +157,7 @@ class BlacklistToken(db.Model):
     def save(self):
         """Save token in database """
         db.session.add(self)
-        db.commit()
+        db.session.commit()
 
     def __repr__(self):
         """ """
@@ -170,5 +170,4 @@ class BlacklistToken(db.Model):
         if token:
             return True
         return False
-     
-          
+    

@@ -1,6 +1,7 @@
 """The module contains tests for the authentication service"""
 from .base import BaseTestCase
 import json
+import time
 
 class TestAuth(BaseTestCase):
     """Class contains tests to test the authentication service"""
@@ -202,3 +203,83 @@ class TestAuth(BaseTestCase):
             self.assertEqual(response.status_code, 400)
             self.assertIn('Failed to reset password, bad username or password', data['message'])
             self.assertIn('Failed', data['status'])
+
+    def test_logout_success(self):
+        """Tests a logged in user can successfully"""
+        with self.client:
+            res_register = self.client.post(
+                '/auth/register',
+                data=json.dumps(dict(
+                    firstname='inno',
+                    lastname='asiimwe',
+                    username='inno',
+                    password='pass',
+                    email='asiimwe@outlook.com'
+                )),
+                content_type='application/json'
+            )
+
+            res_login = self.client.post(
+                '/auth/login',
+                data=json.dumps(dict(
+                    username='inno',
+                    password='pass'
+                )),
+                content_type='application/json'
+            )
+
+            response = self.client.post(
+                '/auth/logout',
+                headers=dict(
+                    Authorization='Bearer '+json.loads(
+                        res_login.data.decode()
+                        )['auth_token']
+                    )
+            )
+            data = json.loads(response.data.decode())
+            self.assertEqual(res_register.status_code, 201)
+            self.assertEqual(res_login.status_code, 200)
+            self.assertEqual(response.status_code, 200)
+            self.assertIn('Successfully logged out', data['message'])
+            self.assertIn('success', data['status'])
+
+    def test_logout_expired_token(self):
+        """Tests failure incase the auth_token has expired"""
+        with self.client:
+            res_register = self.client.post(
+                '/auth/register',
+                data=json.dumps(dict(
+                    firstname='inno',
+                    lastname='asiimwe',
+                    username='inno',
+                    password='pass',
+                    email='asiimwe@outlook.com'
+                )),
+                content_type='application/json'
+            )
+
+            res_login = self.client.post(
+                '/auth/login',
+                data=json.dumps(dict(
+                    username='inno',
+                    password='pass'
+                )),
+                content_type='application/json'
+            )
+
+            time.sleep(6)
+
+            response = self.client.post(
+                '/auth/logout',
+                headers=dict(
+                    Authorization='Bearer '+json.loads(
+                        res_login.data.decode()
+                        )['auth_token']
+                    )
+            )
+            data = json.loads(response.data.decode())
+            self.assertEqual(res_register.status_code, 201)
+            self.assertEqual(res_login.status_code, 200)
+            self.assertEqual(response.status_code, 401)
+            self.assertIn("Failed to logout, Expired token", data['message'])
+            self.assertIn("Failed", data['status'])

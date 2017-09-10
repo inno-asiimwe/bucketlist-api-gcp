@@ -1,6 +1,6 @@
 # bucketlist-api
 
-[![Build Status](https://travis-ci.org/inno-asiimwe/bucketlist-api.svg?branch=master)](https://travis-ci.org/inno-asiimwe/bucketlist-api)
+[![Build Status](https://travis-ci.org/inno-asiimwe/bucketlist-api.svg?branch=development)](https://travis-ci.org/inno-asiimwe/bucketlist-api)
 
 ## Technologies used 
 

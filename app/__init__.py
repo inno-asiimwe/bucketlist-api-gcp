@@ -16,8 +16,12 @@ def create_app(config_name):
 
     db.init_app(app)
 
-    #registering auth_blueprint
+    #registering blueprints
     from .auth import auth_blueprint
+    from .bucketlist import bucketlist_blueprint
     app.register_blueprint(auth_blueprint, url_prefix='/auth')
+    app.register_blueprint(bucketlist_blueprint, url_prefix='/bucketlists')
+
+
 
     return app

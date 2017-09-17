@@ -3,6 +3,7 @@ from flask import make_response, jsonify , request
 from app.models import User, BlacklistToken
 import jwt
 from flask_bcrypt import Bcrypt
+from app.utils import auth_required
 
 @auth_blueprint.route('/register', methods=['POST'])
 def register_user():
@@ -76,34 +77,20 @@ def reset_password():
     return make_response(jsonify(response)), 400
 
 @auth_blueprint.route('/logout', methods=['POST'])
-def logout_user():
+@auth_required
+def logout_user(resp, auth_token):
     """Functions logout out a user by blacklisting the authentication token"""
-    auth_header = request.headers.get('Authorization')
-    if auth_header:
-        auth_token = auth_header.split(" ")[1]
-    else:
-        auth_token = ''
-    if auth_token and not isinstance(
-        User.decode_auth_token(auth_token), str):
-        blacklist_token = BlacklistToken(token=auth_token)
-        try:
-            blacklist_token.save()
-            response = {
-                'message':"Successfully logged out",
-                'status':"Success"
-            }
-            return make_response(jsonify(response)), 200
-        except Exception as e:
-            response = {
-                "message": e,
-                "status": "Failed"
-            }
-            return make_response(jsonify(response)), 200
-
-    response = {
-        'message': "Failed to logout, Invalid token",
-        'status': "Failed"
-    }
-    return make_response(jsonify(response)), 401
-        
-    
+    blacklist_token = BlacklistToken(token=auth_token)
+    try:
+        blacklist_token.save()
+        response = {
+            'message':"Successfully logged out",
+            'status':"Success"
+        }
+        return make_response(jsonify(response)), 200
+    except Exception as e:
+        response = {
+            "message": e,
+            "status": "Failed"
+        }
+        return make_response(jsonify(response)), 200

@@ -22,5 +22,6 @@ def auth_required(f):
             resp = User.decode_auth_token(auth_token)
         if not auth_token or isinstance(resp, str):
             return make_response(jsonify(response)), code
-        return f(resp, *args, **kwargs)
+        return f(resp, auth_token, *args, **kwargs)
     return decorated_function
+

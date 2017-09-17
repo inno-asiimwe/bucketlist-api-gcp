@@ -82,7 +82,7 @@ class TestBucketlist(BaseTestCase):
                     owner=user_id
                 )),
                 content_type='application/json'
-            )
+                )
             response2 = self.client.post(
                 '/bucketlists/',
                 headers=dict(Authorization="Bearer " + access_token),
@@ -92,7 +92,7 @@ class TestBucketlist(BaseTestCase):
                     owner=user_id
                 )),
                 content_type='application/json'
-            )
+                )
             data1 = json.loads(response1.data.decode())
             data2 = json.loads(response2.data.decode())
             self.assertEqual(res_register.status_code, 201)
@@ -102,3 +102,31 @@ class TestBucketlist(BaseTestCase):
             self.assertIn('before 30', data1['name'])
             self.assertIn('Failed', data2['status'])
 
+    def test_get_bucketlists(self):
+        """Tests api can get all bucketlists for a given user  """
+        with self.client:
+            res_register = self.register_user()
+            res_login = self.login_user()
+            user_id = User.query.filter_by(username='inno').first().id
+            access_token = json.loads(res_login.data.decode())['auth_token']
+            res_post = self.client.post(
+                '/bucketlists/',
+                headers=dict(Authorization="Bearer " + access_token),
+                data=json.dumps(dict(
+                    name='before 30',
+                    description='Things to do before I am 30 years',
+                    owner=user_id
+                )),
+                content_type='application/json'
+                )
+            response = self.client.get(
+                '/bucketlists/',
+                headers=dict(Authoriation="Bearer "+ access_token),
+                content_type='application/json'
+            )
+            data = json.loads(response.data.decode())
+            self.assertEqual(res_register.status_code, 201)
+            self.assertEqual(res_login.status_code, 200)
+            self.assertEqual(res_post.status_code, 201)
+            self.assertEqual(response.status_code, 200)
+            self.assertIn('before 30', data)

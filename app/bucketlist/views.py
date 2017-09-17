@@ -9,8 +9,7 @@ from flask import make_response, jsonify, request
 def bucketlists(resp, auth_token):
     """view function to handle /bucketlists endpoint """
     user_bucketlists = Bucketlist.get_all_bucketlists(resp)
-
-    if request.data['name'] not in user_bucketlists:
+    if request.method == 'POST':
         name = request.data['name']
         description = request.data['description']
         owner = resp
@@ -31,8 +30,6 @@ def bucketlists(resp, auth_token):
                 'status': 'Failed',
                 'message': str(e)
             }
-    response = {
-        'status': 'Failed',
-        'message': 'Failed to create bucketlist, name already exists'
-    }
-    return make_response(jsonify(response)),202
+            return make_response(jsonify(response)), 202
+
+    

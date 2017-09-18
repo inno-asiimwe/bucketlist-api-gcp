@@ -42,4 +42,9 @@ def bucketlists(resp, auth_token):
         }
         response.append(obj)
     return make_response(jsonify(response)), 200
+
+@bucketlist_blueprint.route('/<int:id>', methods=['GET', 'PUT', 'DELETE'])
+def  bucketlist(id, **kwargs):
+    """ View function handles retrieval, editing and deleting of bucketlist of a given id """
+    pass
     

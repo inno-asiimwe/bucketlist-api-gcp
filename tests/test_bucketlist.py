@@ -65,7 +65,7 @@ class TestBucketlist(BaseTestCase):
             self.assertEqual(response.status_code, 201)
             self.assertIn('before 30', data['name'])
 
-    def test_create_bucketlist_duplicate(self):
+    def test_create_bucketlist_duplicate_name(self):
         """Tests API doesnot create bucketlists with duplicate"""
 
         with self.client:
@@ -151,12 +151,133 @@ class TestBucketlist(BaseTestCase):
             result = json.loads(res_post.data.decode())
             response = self.client.get(
                 '/bucketlists/{}'.format(result['id']),
-                headers=dict(Authorization='Bearer ' + access_token)
+                headers=dict(Authorization='Bearer ' + access_token),
+                content_type='application/json'
             )
             data = json.loads(response.data.decode())
-
             self.assertEqual(res_register.status_code, 201)
             self.assertEqual(res_login.status_code, 200)
             self.assertEqual(res_post.status_code, 201)
             self.assertEqual(response.status_code, 200)
             self.assertIn('before 30', data['name'])
+
+    def test_get_bucketlist_invalid_id(self):
+        """ Tests API returns 404 for an invalid id"""
+        with self.client:
+            res_register = self.register_user()
+            res_login = self.login_user()
+            access_token = json.loads(res_login.data.decode())['auth_token']
+            response = self.client.get(
+                '/bucketlists/1',
+                headers=dict(Authorization='Bearer ' + access_token),
+                content_type='application/json'
+            )
+            self.assertEqual(res_register.status_code, 201)
+            self.assertEqual(res_login.status_code, 200)
+            self.assertEqual(response.status_code, 404)
+            
+    def test_put_bucketlist(self):
+        """Tests API can update bucketlist"""
+        with self.client:
+            res_register = self.register_user()
+            res_login = self.login_user()
+            user_id = User.query.filter_by(username='inno').first().id
+            access_token = json.loads(res_login.data.decode())['auth_token']
+            res_post = self.client.post(
+                '/bucketlists/',
+                headers=dict(Authorization="Bearer " + access_token),
+                data=json.dumps(dict(
+                    name='before 30',
+                    description='Things to do before I am 30 years',
+                    owner=user_id
+                )),
+                content_type='application/json'
+                )
+            result = json.loads(res_post.data.decode())
+            response = self.client.put(
+                '/bucketlists/{}'.format(result['id']),
+                headers=dict(Authorization="Bearer " + access_token),
+                data=json.dumps(dict(
+                    name='Before 30'
+                )),
+                content_type='application/json'
+            )
+            data = json.loads(response.data.decode())
+            self.assertEqual(res_register.status_code, 201)
+            self.assertEqual(res_login.status_code, 200)
+            self.assertEqual(res_post.status_code, 201)
+            self.assertEqual(response.status_code, 200)
+            self.assertIn('Before 30', data['name'])
+
+    def test_put_bucketlist_invalid_id(self):
+        """Tests API returns 404 for an invalid id"""
+        with self.client:
+            res_register = self.register_user()
+            res_login = self.login_user()
+            access_token = json.loads(res_login.data.decode())['auth_token']
+            response = self.client.put(
+                '/bucketlists/1',
+                headers=dict(Authorization='Bearer ' + access_token),
+                data=dict(
+                    name='before 30'
+                ),
+                content_type='application/json'
+            )
+            self.assertEqual(res_register.status_code, 201)
+            self.assertEqual(res_login.status_code, 200)
+            self.assertEqual(response.status_code, 404)
+
+    def test_delete_bucketlist(self):
+        """ Tests API can delete bucketlist by id """
+        with self.client:
+            res_register = self.register_user()
+            res_login = self.login_user()
+            user_id = User.query.filter_by(username='inno').first().id
+            access_token = json.loads(res_login.data.decode())['auth_token']
+            res_post = self.client.post(
+                '/bucketlists/',
+                headers=dict(Authorization="Bearer " + access_token),
+                data=json.dumps(dict(
+                    name='before 30',
+                    description='Things to do before I am 30 years',
+                    owner=user_id
+                )),
+                content_type='application/json'
+                )
+            result = json.dumps(res_post.data.decode())
+            response = self.client.delete(
+                '/bucketlists/{}'.format(result['id']),
+                headers=dict(Authorization='Bearer ' + access_token),
+                content_type='application/json'
+            )
+            data = json.loads(response.data.decode())
+            res_get = self.client.get(
+                '/bucketlists/{}' .format(result['id']),
+                headers=dict(Authorization='Bearer ' + access_token),
+                content_type='application/json'
+            )
+
+            self.assertEqual(res_register.status_code, 201)
+            self.assertEqual(res_login.status_code, 200)
+            self.assertEqual(res_post.status_code, 201)
+            self.assertEqual(response.status_code, 200)
+            self.assertIn('Success', data['status'])
+            self.assertEqual(res_get.status_code, 404)
+
+    def test_delete_bucketlist_invalid_id(self):
+        """Tests API returns 404 for an invalid id"""
+        with self.client:
+            res_register = self.register_user()
+            res_login = self.login_user()
+            access_token = json.loads(res_login.data.decode())['auth_token']
+            response = self.client.delete(
+                '/bucketlists/1',
+                headers=dict(Authorization='Bearer ' + access_token),
+                data=dict(
+                    name='before 30'
+                ),
+                content_type='application/json'
+            )
+            self.assertEqual(res_register.status_code, 201)
+            self.assertEqual(res_login.status_code, 200)
+            self.assertEqual(response.status_code, 404)

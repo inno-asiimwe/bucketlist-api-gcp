@@ -121,7 +121,7 @@ class TestBucketlist(BaseTestCase):
                 )
             response = self.client.get(
                 '/bucketlists/',
-                headers=dict(Authoriation="Bearer "+ access_token),
+                headers=dict(Authorization="Bearer "+ access_token),
                 content_type='application/json'
             )
             data = json.loads(response.data.decode())
@@ -129,4 +129,34 @@ class TestBucketlist(BaseTestCase):
             self.assertEqual(res_login.status_code, 200)
             self.assertEqual(res_post.status_code, 201)
             self.assertEqual(response.status_code, 200)
-            self.assertIn('before 30', data)
+            self.assertIn('before 30', data[0]['name'])
+    
+    def test_get_bucketlist(self):
+        """Tests api can get a bucketlist by id """
+        with self.client:
+            res_register = self.register_user()
+            res_login = self.login_user()
+            user_id = User.query.filter_by(username='inno').first().id
+            access_token = json.loads(res_login.data.decode())['auth_token']
+            res_post = self.client.post(
+                '/bucketlists/',
+                headers=dict(Authorization="Bearer " + access_token),
+                data=json.dumps(dict(
+                    name='before 30',
+                    description='Things to do before I am 30 years',
+                    owner=user_id
+                )),
+                content_type='application/json'
+                )
+            result = json.loads(res_post.data.decode())
+            response = self.client.get(
+                '/bucketlists/{}'.format(result['id']),
+                headers=dict(Authorization='Bearer ' + access_token)
+            )
+            data = json.loads(response.data.decode())
+
+            self.assertEqual(res_register.status_code, 201)
+            self.assertEqual(res_login.status_code, 200)
+            self.assertEqual(res_post.status_code, 201)
+            self.assertEqual(response.status_code, 200)
+            self.assertIn('before 30', data['name'])

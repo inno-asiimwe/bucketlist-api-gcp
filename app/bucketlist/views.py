@@ -8,7 +8,6 @@ from flask import make_response, jsonify, request
 @auth_required
 def bucketlists(resp, auth_token):
     """view function to handle /bucketlists endpoint """
-    user_bucketlists = Bucketlist.get_all_bucketlists(resp)
     if request.method == 'POST':
         name = request.data['name']
         description = request.data['description']
@@ -31,5 +30,16 @@ def bucketlists(resp, auth_token):
                 'message': str(e)
             }
             return make_response(jsonify(response)), 202
+    user_bucketlists = Bucketlist.get_all_bucketlists(resp)
+    response = []
 
+    for bucketlist in user_bucketlists:
+        obj = {
+            'id': bucketlist.id,
+            'name': bucketlist.name,
+            'description': bucketlist.description,
+            'owner' : bucketlist.owner
+        }
+        response.append(obj)
+    return make_response(jsonify(response)), 200
     

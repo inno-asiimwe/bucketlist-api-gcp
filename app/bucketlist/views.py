@@ -1,8 +1,8 @@
 """views for bucketlist_blueprint """
+from flask import make_response, jsonify, request, abort
 from app.utils import auth_required
 from app.models import Bucketlist
 from . import bucketlist_blueprint
-from flask import make_response, jsonify, request
 
 @bucketlist_blueprint.route('/', methods=['POST', 'GET'])
 @auth_required
@@ -43,8 +43,38 @@ def bucketlists(resp, auth_token):
         response.append(obj)
     return make_response(jsonify(response)), 200
 
-@bucketlist_blueprint.route('/<int:id>', methods=['GET', 'PUT', 'DELETE'])
-def  bucketlist(id, **kwargs):
+@bucketlist_blueprint.route('/<int:b_id>', methods=['GET', 'PUT', 'DELETE'])
+@auth_required
+def  bucketlist(resp, auth_token, b_id):
     """ View function handles retrieval, editing and deleting of bucketlist of a given id """
-    pass
+    my_bucketlist = Bucketlist.query.filter_by(id=b_id).first()
+
+    if not my_bucketlist:
+        abort(404)
+    elif request.method == 'DELETE':
+        my_bucketlist.delete()
+        response = {
+            'status': 'Success'
+        }
+        return make_response(jsonify(response)), 200
+    elif request.method == 'PUT':
+        my_bucketlist.name = request.data['name']
+        my_bucketlist.description = request.data['description']
+        my_bucketlist.save()
+        response = {
+            'id': my_bucketlist.id,
+            'name': my_bucketlist.name,
+            'description': my_bucketlist.description,
+            'owner': my_bucketlist.owner
+        }
+        return make_response(jsonify(response)), 200
+    response = {
+        'id': my_bucketlist.id,
+        'name': my_bucketlist.name,
+        'description': my_bucketlist.description,
+        'owner': my_bucketlist.owner
+    }
+    return make_response(jsonify(response))
+
+
     

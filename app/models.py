@@ -51,8 +51,8 @@ class User(db.Model):
 
     def delete(self):
         """Method deletes user from database"""
-        db.session.remove(self)
-        db.commit()
+        db.session.delete(self)
+        db.session.commit()
 
     def __repr__(self):
         """ """
@@ -97,8 +97,8 @@ class Bucketlist(db.Model):
 
     def delete(self):
         """Method to delete bucketlist from database"""
-        db.session.remove(self)
-        db.seession.commit()
+        db.session.delete(self)
+        db.session.commit()
 
     @staticmethod
     def get_all_bucketlists(owner_id):
@@ -134,7 +134,7 @@ class Item(db.Model):
 
     def delete(self):
         """Method to delete item from database"""
-        db.session.remove(self)
+        db.session.delete(self)
         db.seession.commit()
     @staticmethod
     def get_all_items(bucketlist_id):

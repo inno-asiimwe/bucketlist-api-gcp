@@ -198,7 +198,8 @@ class TestBucketlist(BaseTestCase):
                 '/bucketlists/{}'.format(result['id']),
                 headers=dict(Authorization="Bearer " + access_token),
                 data=json.dumps(dict(
-                    name='Before 30'
+                    name='Before 30',
+                    description='Things to do before age 30'
                 )),
                 content_type='application/json'
             )
@@ -246,13 +247,13 @@ class TestBucketlist(BaseTestCase):
                 )
             result = json.dumps(res_post.data.decode())
             response = self.client.delete(
-                '/bucketlists/{}'.format(result['id']),
+                '/bucketlists/1',
                 headers=dict(Authorization='Bearer ' + access_token),
                 content_type='application/json'
             )
             data = json.loads(response.data.decode())
             res_get = self.client.get(
-                '/bucketlists/{}' .format(result['id']),
+                '/bucketlists/1',
                 headers=dict(Authorization='Bearer ' + access_token),
                 content_type='application/json'
             )

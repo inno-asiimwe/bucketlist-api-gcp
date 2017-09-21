@@ -76,5 +76,18 @@ def  bucketlist(resp, auth_token, b_id):
     }
     return make_response(jsonify(response))
 
+@bucketlist_blueprint.route('/<int:b_id>/items/', methods=['POST'])
+@auth_required
+def create_bucketlist_item(resp, auth_token, b_id):
+    if request.method == 'POST':
+        return make_response(jsonify({}))
+
+@bucketlist_blueprint.route('/<int:b_id>/items/<int:i_id>', methods=['PUT', 'DELETE'])
+@auth_required
+def edit_bucketlist_item(resp, auth_token, b_id, i_id):
+    if request.method == 'PUT':
+        return make_response(jsonify({}))
+    return make_response(jsonify({}))
+
 
     

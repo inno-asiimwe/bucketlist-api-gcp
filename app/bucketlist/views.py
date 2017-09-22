@@ -1,7 +1,7 @@
 """views for bucketlist_blueprint """
 from flask import make_response, jsonify, request, abort
 from app.utils import auth_required
-from app.models import Bucketlist
+from app.models import Bucketlist, Item
 from . import bucketlist_blueprint
 
 @bucketlist_blueprint.route('/', methods=['POST', 'GET'])
@@ -74,20 +74,72 @@ def  bucketlist(resp, auth_token, b_id):
         'description': my_bucketlist.description,
         'owner': my_bucketlist.owner
     }
-    return make_response(jsonify(response))
+    return make_response(jsonify(response)), 200
 
 @bucketlist_blueprint.route('/<int:b_id>/items/', methods=['POST'])
 @auth_required
 def create_bucketlist_item(resp, auth_token, b_id):
+    """"""
     if request.method == 'POST':
-        return make_response(jsonify({}))
+        my_bucketlist = Bucketlist.query.filter_by(id=b_id, owner=resp).first()
+        if my_bucketlist:
+            item = Item.query.filter_by(bucketlist_id=b_id, name=request.data['name']).first()
+            if not item:
+                try:
+                    new_item = Item(
+                        name=request.data['name'],
+                        description=request.data['description'],
+                        bucketlist_id=b_id)
+                    new_item.save()
+                except Exception as e:
+                    response = {
+                        'status': 'Failed',
+                        'message': str(e)
+                    }
+                    return make_response(jsonify(response)), 202
+                response = {
+                    'status': 'Success',
+                    'id': new_item.id,
+                    'name': new_item.name,
+                    'description': new_item.description,
+                    'bucketlist_id': new_item.bucketlist_id
+                }
+                return make_response(jsonify(response)), 201
+            response = {
+                'status': 'Failed',
+                'message': 'Item already exists'
+            }
+            return make_response(jsonify(response)), 202
+        abort(404)
 
 @bucketlist_blueprint.route('/<int:b_id>/items/<int:i_id>', methods=['PUT', 'DELETE'])
 @auth_required
 def edit_bucketlist_item(resp, auth_token, b_id, i_id):
-    if request.method == 'PUT':
-        return make_response(jsonify({}))
-    return make_response(jsonify({}))
-
-
+    """"View for editing and deleting a bucketlist"""
+    my_item = Item.query.filter_by(bucketlist_id=b_id, id=i_id).first()
+    if my_item:
+        if request.method == 'PUT':
+            my_item.name = request.data['name']
+            my_item.description = request.data['description']
+            my_item.save()
+            response = {
+                'status':'Success',
+                'id': my_item.id,
+                'name': my_item.name,
+                'description':my_item.description,
+                'bucketlist_id': my_item.bucketlist_id
+            }
+            return make_response(jsonify(response)), 200
+        if request.method == 'DELETE':
+            my_item.delete()
+            response = {
+                'status': 'Success'
+            }
+            return make_response(jsonify(response)), 200
+    response = {
+        'status': 'Failed',
+        'message': 'Item not found'
+    }
+    return make_response((jsonify(response))), 404
+     
     

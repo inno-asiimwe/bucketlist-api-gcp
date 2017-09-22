@@ -130,7 +130,6 @@ class TestBucketlist(BaseTestCase):
             self.assertEqual(res_post.status_code, 201)
             self.assertEqual(response.status_code, 200)
             self.assertIn('before 30', data[0]['name'])
-    
     def test_get_bucketlist(self):
         """Tests api can get a bucketlist by id """
         with self.client:
@@ -390,9 +389,6 @@ class TestBucketlist(BaseTestCase):
             self.assertEqual(res_login.status_code, 200)
             self.assertEqual(res_bucketlist.status_code, 201)
             self.assertEqual(response.status_code, 404)
-            
-
-
 
     def test_edit_item_success(self):
         """Tests API can edit existing item"""
@@ -412,7 +408,7 @@ class TestBucketlist(BaseTestCase):
                 content_type='application/json'
             )
             response_1 = self.client.post(
-                '/bucketlists/1/items/1',
+                '/bucketlists/1/items/',
                 headers=dict(Authorization='Bearer '+ access_token),
                 data=json.dumps(dict(
                     name='Build a house',

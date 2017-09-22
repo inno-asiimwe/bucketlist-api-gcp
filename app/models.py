@@ -135,7 +135,7 @@ class Item(db.Model):
     def delete(self):
         """Method to delete item from database"""
         db.session.delete(self)
-        db.seession.commit()
+        db.session.commit()
     @staticmethod
     def get_all_items(bucketlist_id):
         """Method returns all items in a given bucketlist"""

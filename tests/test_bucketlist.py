@@ -501,4 +501,56 @@ class TestBucketlist(BaseTestCase):
             self.assertEqual(res_login.status_code, 200)
             self.assertEqual(res_bucketlist.status_code, 201)
             self.assertEqual(response.status_code, 200)
-            self.assertIn('Before 30', data['name'] )
+            self.assertIn('Before 30', data[0]['name'] )
+
+            def test_pagination(self):
+                """Tests API can paginate results"""
+                with self.client:
+                    res_register = self.register_user()
+                    res_login = self.login_user()
+                    user_id = User.query.filter_by(username='inno').first().id
+                    access_token = json.loads(res_login.data.decode())['auth_token']
+                    res_bucketlist = self.client.post(
+                        '/bucketlists/',
+                        headers=dict(Authorization='Bearer ' + access_token),
+                        data=json.dumps(dict(
+                            name='Before 30',
+                            description='Things to do before I am 30',
+                            owner=user_id
+                        )),
+                        content_type='application/json'
+                    )
+                    res_bucketlist2 = self.client.post(
+                        '/bucketlists/',
+                        headers=dict(Authorization='Bearer ' + access_token),
+                        data=json.dumps(dict(
+                            name='Tours',
+                            description='The tours of my life',
+                            owner=user_id
+                        )),
+                        content_type='application/json'
+                    )
+                    res_bucketlist3 = self.client.post(
+                        '/bucketlists/',
+                        headers=dict(Authorization='Bearer ' + access_token),
+                        data=json.dumps(dict(
+                            name='Before 60 ',
+                            description='Things to do before I am 60 years',
+                            owner=user_id
+                        )),
+                        content_type='application/json'
+                    )
+                    response = self.client.get(
+                        '/bucketlists?limit=2',
+                        headers=dict(Authorization='Bearer ' + access_token),
+                        content_type='application/json'
+                    )
+                    data = json.loads(response.data.decode())
+                    self.assertEqual(res_register.status_code, 201)
+                    self.assertEqual(res_login.status_code, 200)
+                    self.assertEqual(res_bucketlist.status_code, 201)
+                    self.assertEqual(res_bucketlist2.status_code, 201)
+                    self.assertEqual(res_bucketlist3.status_code, 201)
+                    self.assertEqual(3, len(data))
+
+            

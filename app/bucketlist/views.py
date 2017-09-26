@@ -4,10 +4,12 @@ from app.utils import auth_required
 from app.models import Bucketlist, Item
 from . import bucketlist_blueprint
 
-@bucketlist_blueprint.route('/', methods=['POST', 'GET'])
+@bucketlist_blueprint.route('', methods=['POST', 'GET'])
 @auth_required
 def bucketlists(resp, auth_token):
     """view function to handle /bucketlists endpoint """
+    q = request.args.get('q')
+    limit = request.args.get('limit')
     if request.method == 'POST':
         name = request.data['name']
         description = request.data['description']
@@ -30,17 +32,24 @@ def bucketlists(resp, auth_token):
                 'message': str(e)
             }
             return make_response(jsonify(response)), 202
+    elif q and limit:
+        user_bucketlists = Bucketlist.query.filter_by(
+            Bucketlist.name.ilike("%" + q + "%"), Bucketlist.owner == resp
+        ).all().limit(int(limit))
+        response = [bucketlist.to_json() for bucketlist in user_bucketlists]
+        return make_response(jsonify(response)), 200
+    elif limit:
+        user_bucketlists = Bucketlist.query.filter_by(owner=resp).limit(int(limit))
+        response = [bucketlist.to_json() for bucketlist in user_bucketlists]
+        return make_response(jsonify(response)), 200
+    elif q:
+        user_bucketlists = Bucketlist.query.filter(
+            Bucketlist.name.ilike("%" + q + "%"), Bucketlist.owner == resp
+        ).all()
+        response = [bucketlist.to_json() for bucketlist in user_bucketlists]
+        return make_response(jsonify(response)), 200
     user_bucketlists = Bucketlist.get_all_bucketlists(resp)
-    response = []
-
-    for bucketlist in user_bucketlists:
-        obj = {
-            'id': bucketlist.id,
-            'name': bucketlist.name,
-            'description': bucketlist.description,
-            'owner' : bucketlist.owner
-        }
-        response.append(obj)
+    response = [bucketlist.to_json() for bucketlist in user_bucketlists]
     return make_response(jsonify(response)), 200
 
 @bucketlist_blueprint.route('/<int:b_id>', methods=['GET', 'PUT', 'DELETE'])

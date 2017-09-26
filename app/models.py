@@ -107,7 +107,7 @@ class Bucketlist(db.Model):
             'name': self.name,
             'description': self.description,
             'owner': self.owner,
-            'items': [item.to_json() for item in self.items.all()]
+            'items': [item.to_json() for item in self.items]
         }
         return json_data
 

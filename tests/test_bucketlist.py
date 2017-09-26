@@ -50,7 +50,7 @@ class TestBucketlist(BaseTestCase):
             user_id = User.query.filter_by(username='inno').first().id
             access_token = json.loads(res_login.data.decode())['auth_token']
             response = self.client.post(
-                '/bucketlists/',
+                '/bucketlists',
                 headers=dict(Authorization="Bearer " + access_token),
                 data=json.dumps(dict(
                     name='before 30',
@@ -74,7 +74,7 @@ class TestBucketlist(BaseTestCase):
             user_id = User.query.filter_by(username='inno').first().id
             access_token = json.loads(res_login.data.decode())['auth_token']
             response1 = self.client.post(
-                '/bucketlists/',
+                '/bucketlists',
                 headers=dict(Authorization="Bearer " + access_token),
                 data=json.dumps(dict(
                     name='before 30',
@@ -84,7 +84,7 @@ class TestBucketlist(BaseTestCase):
                 content_type='application/json'
                 )
             response2 = self.client.post(
-                '/bucketlists/',
+                '/bucketlists',
                 headers=dict(Authorization="Bearer " + access_token),
                 data=json.dumps(dict(
                     name='before 30',
@@ -110,7 +110,7 @@ class TestBucketlist(BaseTestCase):
             user_id = User.query.filter_by(username='inno').first().id
             access_token = json.loads(res_login.data.decode())['auth_token']
             res_post = self.client.post(
-                '/bucketlists/',
+                '/bucketlists',
                 headers=dict(Authorization="Bearer " + access_token),
                 data=json.dumps(dict(
                     name='before 30',
@@ -120,7 +120,7 @@ class TestBucketlist(BaseTestCase):
                 content_type='application/json'
                 )
             response = self.client.get(
-                '/bucketlists/',
+                '/bucketlists',
                 headers=dict(Authorization="Bearer "+ access_token),
                 content_type='application/json'
             )
@@ -138,7 +138,7 @@ class TestBucketlist(BaseTestCase):
             user_id = User.query.filter_by(username='inno').first().id
             access_token = json.loads(res_login.data.decode())['auth_token']
             res_post = self.client.post(
-                '/bucketlists/',
+                '/bucketlists',
                 headers=dict(Authorization="Bearer " + access_token),
                 data=json.dumps(dict(
                     name='before 30',
@@ -183,7 +183,7 @@ class TestBucketlist(BaseTestCase):
             user_id = User.query.filter_by(username='inno').first().id
             access_token = json.loads(res_login.data.decode())['auth_token']
             res_post = self.client.post(
-                '/bucketlists/',
+                '/bucketlists',
                 headers=dict(Authorization="Bearer " + access_token),
                 data=json.dumps(dict(
                     name='before 30',
@@ -235,7 +235,7 @@ class TestBucketlist(BaseTestCase):
             user_id = User.query.filter_by(username='inno').first().id
             access_token = json.loads(res_login.data.decode())['auth_token']
             res_post = self.client.post(
-                '/bucketlists/',
+                '/bucketlists',
                 headers=dict(Authorization="Bearer " + access_token),
                 data=json.dumps(dict(
                     name='before 30',
@@ -289,7 +289,7 @@ class TestBucketlist(BaseTestCase):
             user_id = User.query.filter_by(username='inno').first().id
             access_token = json.loads(res_login.data.decode())['auth_token']
             res_bucketlist = self.client.post(
-                '/bucketlists/',
+                '/bucketlists',
                 headers=dict(Authorization='Bearer ' + access_token),
                 data=json.dumps(dict(
                     name='Before 30',
@@ -322,7 +322,7 @@ class TestBucketlist(BaseTestCase):
             user_id = User.query.filter_by(username='inno').first().id
             access_token = json.loads(res_login.data.decode())['auth_token']
             res_bucketlist = self.client.post(
-                '/bucketlists/',
+                '/bucketlists',
                 headers=dict(Authorization='Bearer ' + access_token),
                 data=json.dumps(dict(
                     name='Before 30',
@@ -366,7 +366,7 @@ class TestBucketlist(BaseTestCase):
             user_id = User.query.filter_by(username='inno').first().id
             access_token = json.loads(res_login.data.decode())['auth_token']
             res_bucketlist = self.client.post(
-                '/bucketlists/',
+                '/bucketlists',
                 headers=dict(Authorization='Bearer ' + access_token),
                 data=json.dumps(dict(
                     name='Before 30',
@@ -398,7 +398,7 @@ class TestBucketlist(BaseTestCase):
             user_id = User.query.filter_by(username='inno').first().id
             access_token = json.loads(res_login.data.decode())['auth_token']
             res_bucketlist = self.client.post(
-                '/bucketlists/',
+                '/bucketlists',
                 headers=dict(Authorization='Bearer ' + access_token),
                 data=json.dumps(dict(
                     name='Before 30',
@@ -443,7 +443,7 @@ class TestBucketlist(BaseTestCase):
             user_id = User.query.filter_by(username='inno').first().id
             access_token = json.loads(res_login.data.decode())['auth_token']
             res_bucketlist = self.client.post(
-                '/bucketlists/',
+                '/bucketlists',
                 headers=dict(Authorization='Bearer ' + access_token),
                 data=json.dumps(dict(
                     name='Before 30',
@@ -482,7 +482,7 @@ class TestBucketlist(BaseTestCase):
             user_id = User.query.filter_by(username='inno').first().id
             access_token = json.loads(res_login.data.decode())['auth_token']
             res_bucketlist = self.client.post(
-                '/bucketlists/',
+                '/bucketlists',
                 headers=dict(Authorization='Bearer ' + access_token),
                 data=json.dumps(dict(
                     name='Before 30',
@@ -492,7 +492,7 @@ class TestBucketlist(BaseTestCase):
                 content_type='application/json'
             )
             response = self.client.get(
-                '/bucketlist?q=Before 30',
+                '/bucketlists?q=Before 30',
                 headers=dict(Authorization='Bearer ' + access_token),
                 content_type='application/json'
             )
@@ -501,7 +501,7 @@ class TestBucketlist(BaseTestCase):
             self.assertEqual(res_login.status_code, 200)
             self.assertEqual(res_bucketlist.status_code, 201)
             self.assertEqual(response.status_code, 200)
-            self.assertIn('Before 30', data[0]['name'] )
+            self.assertIn('Before 30', data[0]['name'])
 
             def test_pagination(self):
                 """Tests API can paginate results"""
@@ -511,7 +511,7 @@ class TestBucketlist(BaseTestCase):
                     user_id = User.query.filter_by(username='inno').first().id
                     access_token = json.loads(res_login.data.decode())['auth_token']
                     res_bucketlist = self.client.post(
-                        '/bucketlists/',
+                        '/bucketlists',
                         headers=dict(Authorization='Bearer ' + access_token),
                         data=json.dumps(dict(
                             name='Before 30',
@@ -521,7 +521,7 @@ class TestBucketlist(BaseTestCase):
                         content_type='application/json'
                     )
                     res_bucketlist2 = self.client.post(
-                        '/bucketlists/',
+                        '/bucketlists',
                         headers=dict(Authorization='Bearer ' + access_token),
                         data=json.dumps(dict(
                             name='Tours',
@@ -531,7 +531,7 @@ class TestBucketlist(BaseTestCase):
                         content_type='application/json'
                     )
                     res_bucketlist3 = self.client.post(
-                        '/bucketlists/',
+                        '/bucketlists',
                         headers=dict(Authorization='Bearer ' + access_token),
                         data=json.dumps(dict(
                             name='Before 60 ',

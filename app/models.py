@@ -100,6 +100,17 @@ class Bucketlist(db.Model):
         db.session.delete(self)
         db.session.commit()
 
+    def to_json(self):
+        """Method converts a bucketlist to a json object"""
+        json_data = {
+            'id':self.id,
+            'name': self.name,
+            'description': self.description,
+            'owner': self.owner,
+            'items': [item.to_json() for item in self.items.all()]
+        }
+        return json_data
+
     @staticmethod
     def get_all_bucketlists(owner_id):
         """Method returns all bucketlists owned by a given user"""
@@ -136,6 +147,17 @@ class Item(db.Model):
         """Method to delete item from database"""
         db.session.delete(self)
         db.session.commit()
+
+    def to_json(self):
+        """Method converts bucketlists to json"""
+        json_data = {
+            'id': self.id,
+            'name': self.name,
+            'description': self.description,
+            'bucketlist_id': self.bucketlist_id
+        }
+        return json_data
+
     @staticmethod
     def get_all_items(bucketlist_id):
         """Method returns all items in a given bucketlist"""

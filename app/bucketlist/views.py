@@ -32,12 +32,6 @@ def bucketlists(resp, auth_token):
                 'message': str(e)
             }
             return make_response(jsonify(response)), 202
-    elif q and limit:
-        user_bucketlists = Bucketlist.query.filter_by(
-            Bucketlist.name.ilike("%" + q + "%"), Bucketlist.owner == resp
-        ).all().limit(int(limit))
-        response = [bucketlist.to_json() for bucketlist in user_bucketlists]
-        return make_response(jsonify(response)), 200
     elif limit:
         user_bucketlists = Bucketlist.query.filter_by(owner=resp).limit(int(limit))
         response = [bucketlist.to_json() for bucketlist in user_bucketlists]

@@ -7,7 +7,37 @@ from . import bucketlist_blueprint
 @bucketlist_blueprint.route('', methods=['POST', 'GET'])
 @auth_required
 def bucketlists(resp, auth_token):
-    """view function to handle /bucketlists endpoint """
+    """create or retrieve bucketlist
+    ---
+    tags:
+     - "bucketlists"
+    parameters:
+      - in: "header"
+        name: "Authorization"
+        description: "Token of logged in user"
+        required: true
+        type: string
+      - in: "body"
+        name: "body"
+        description: "Name and description of bucketlist"
+        schema:
+         type: "object"
+         required:
+          - name
+          - description
+         properties:
+          name:
+           type: "string"
+          description:
+           type: "string"
+    responses:
+        202:
+            description: "success"
+        201:
+            description: "Failed"
+        200:
+            description: "success"
+     """
     q = request.args.get('q')
     limit = request.args.get('limit')
     if request.method == 'POST':
@@ -49,7 +79,35 @@ def bucketlists(resp, auth_token):
 @bucketlist_blueprint.route('/<int:b_id>', methods=['GET', 'PUT', 'DELETE'])
 @auth_required
 def  bucketlist(resp, auth_token, b_id):
-    """ View function handles retrieval, editing and deleting of bucketlist of a given id """
+    """ Retrieve, edit and delete bucketlist
+    ---
+    tags:
+     - "bucketlists"
+    parameters:
+     - in: "header"
+       name: "Authorization"
+       description: "Token of logged in user"
+       required: true
+       type: string
+     - in: "body"
+       name: "body"
+       description: "Name and description of bucketlist"
+       schema:
+        type: "object"
+        required:
+         - name 
+         - description
+        properties:
+         name:
+            type: "string"
+         description:
+            type: "string"
+    responses:
+        404:
+            description: "not found"
+        200:
+            description: "success"
+     """
     my_bucketlist = Bucketlist.query.filter_by(id=b_id).first()
 
     if not my_bucketlist:
@@ -82,7 +140,38 @@ def  bucketlist(resp, auth_token, b_id):
 @bucketlist_blueprint.route('/<int:b_id>/items/', methods=['POST'])
 @auth_required
 def create_bucketlist_item(resp, auth_token, b_id):
-    """"""
+    """Create a bucketlist item
+    ---
+    tags:
+     - "bucketlists"
+    parameters:
+     - in: "header"
+       name: "Authorization"
+       required: true
+       description: "Token of logged in user"
+       type: string
+     - in: "body"
+       name: "body"
+       required: true
+       description: "Name and Description of bucketlist item"
+       schema:
+        type: "object"
+        required:
+         - name
+         - description
+        properties:
+         name:
+            type: "string"
+         description:
+            type: "string"
+    responses:
+        404:
+            description: "resource not found"
+        202:
+            description: "Failed"
+        201:
+            description: "success"
+    """
     if request.method == 'POST':
         my_bucketlist = Bucketlist.query.filter_by(id=b_id, owner=resp).first()
         if my_bucketlist:
@@ -118,7 +207,35 @@ def create_bucketlist_item(resp, auth_token, b_id):
 @bucketlist_blueprint.route('/<int:b_id>/items/<int:i_id>', methods=['PUT', 'DELETE'])
 @auth_required
 def edit_bucketlist_item(resp, auth_token, b_id, i_id):
-    """"View for editing and deleting a bucketlist"""
+    """"Edit and delete bucketlist item
+    ---
+    tags:
+     - "bucketlists"
+    parameters:
+     - in: "headers"
+       name: "Authorization"
+       required: true
+       type: string
+       description: "Token of logged in user"
+     - in: "body"
+       name: "body"
+       description: "Name and description of bucketlist item"
+       schema:
+        type: "object"
+        required:
+         - name
+         - description
+        properties:
+            name:
+                type: "string"
+            description:
+                type: "string"
+    responses:
+        200:
+            description: "success"
+        404:
+            description: "Failed"
+    """
     my_item = Item.query.filter_by(bucketlist_id=b_id, id=i_id).first()
     if my_item:
         if request.method == 'PUT':

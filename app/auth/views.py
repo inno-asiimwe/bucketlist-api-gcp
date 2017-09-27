@@ -7,7 +7,40 @@ from app.utils import auth_required
 
 @auth_blueprint.route('/register', methods=['POST'])
 def register_user():
-    """Route handles registration of a new user"""
+    """Registration of a new user
+    ---
+    tags:
+      - "auth"
+    parameters:
+      - in: "body"
+        name: "body"
+        description: "firstname, lastname, username, password, email"
+        required: true
+        schema:
+         type: "object"
+         required:
+         - "firstname"
+         - "lastname"
+         - "username"
+         - "password"
+         - "email"
+         properties:
+          firstname:
+           type: "string"
+          lastname:
+           type: "string"
+          username:
+           type: "string"
+          password:
+           type: "string"
+          email:
+           type: "string"
+    responses:
+        201:
+            description: "Successfully Registerd"
+        202:
+            description: "Failed to register"
+    """
     user = User.query.filter_by(username=request.data['username']).first()
 
     if not user:
@@ -39,7 +72,32 @@ def register_user():
 
 @auth_blueprint.route('/login', methods=['POST'])
 def login_user():
-    """Function handles logging in a user"""
+    """Loging in a user
+    ---
+    tags:
+     - "auth"
+    parameters:
+        - in: "body"
+          name: "body"
+          description: "Username and password"
+          required: true
+          schema:
+            type: "object"
+            required:
+            - "username"
+            - "password"
+            properties:
+                username:
+                    type: "string"
+                password:
+                    type: "string"
+    responses:
+        200:
+            description: "Successfully logged in"
+        401:
+            description: "Failed to login"
+
+    """
     user = User.query.filter_by(username=request.data['username']).first()
 
     if user and user.password_is_valid(request.data['password']):
@@ -59,7 +117,38 @@ def login_user():
 
 @auth_blueprint.route('/reset-password', methods=['POST'])
 def reset_password():
-    """Function handles resetting a password for a given user"""
+    """Reset User password
+    ---
+    tags:
+     - "auth"
+    parameters:
+        - in: "header"
+          name: "Authorization"
+          description: "Token of logged in user"
+          required: true
+        - in: "body"
+          name: "body"
+          description: "Username, old password and new password"
+          required: true
+          schema:
+            type: "object"
+            required:
+            - "username"
+            - "old_password"
+            - "new_password"
+            properties:
+                username:
+                    type: "string"
+                old_password:
+                    type: "string"
+                new_password:
+                    type: "string"
+    responses:
+        200:
+            description: "Successfully changed password"
+        400:
+            description: "Failed to reset password, bad username or password"
+    """
     user = User.query.filter_by(username=request.data['username']).first()
 
     if user and user.password_is_valid(request.data['old_password']):
@@ -79,7 +168,20 @@ def reset_password():
 @auth_blueprint.route('/logout', methods=['POST'])
 @auth_required
 def logout_user(resp, auth_token):
-    """Functions logout out a user by blacklisting the authentication token"""
+    """Log out a user
+    ---
+    tags:
+     - "auth"
+    parameters:
+        - in : "header"
+          name: "Authorization"
+          description: "Token of logged in user"
+          required: true
+          type: "string"
+    responses:
+        200:
+            description: "Success or Failed"
+    """
     blacklist_token = BlacklistToken(token=auth_token)
     try:
         blacklist_token.save()

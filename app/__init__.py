@@ -2,6 +2,7 @@ from flask_api import FlaskAPI
 from flask_sqlalchemy import SQLAlchemy 
 from instance.config import app_config
 from flasgger import Swagger
+from flask_cors import CORS
 
 
 
@@ -19,6 +20,7 @@ def create_app(config_name):
 
     db.init_app(app)
     swagger.init_app(app)
+    CORS(app)
 
     #registering blueprints
     from .auth import auth_blueprint

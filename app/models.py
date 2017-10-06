@@ -13,7 +13,7 @@ class User(db.Model):
     username = db.Column(db.String(256), nullable=False, unique=True)
     password = db.Column(db.String(256), nullable=False)
     email = db.Column(db.String(256), nullable=False, unique=True)
-    bucketlists = db.relationship('Bucketlist', backref='User')
+    bucketlists = db.relationship('Bucketlist', backref='User', cascade='all, delete-orphan')
 
     def __init__(self, firstname, lastname, username, password, email):
         """Initialising the user"""
@@ -31,7 +31,7 @@ class User(db.Model):
         """Generates an authentication token"""
         try:
             payload = {
-                'exp':datetime.datetime.utcnow() + datetime.timedelta(seconds=5),
+                'exp':datetime.datetime.utcnow() + datetime.timedelta(seconds=current_app.config.get('TOKEN_TIME')),
                 'iat':datetime.datetime.utcnow(),
                 'sub':user_id
             }
@@ -81,8 +81,8 @@ class Bucketlist(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(256), nullable=False, unique=True)
     description = db.Column(db.Text)
-    owner = db.Column(db.Integer, db.ForeignKey(User.id))
-    items = db.relationship('Item', backref='Bucketlist')
+    owner = db.Column(db.Integer, db.ForeignKey(User.id, ondelete='cascade'))
+    items = db.relationship('Item', backref='Bucketlist', cascade='all, delete-orphan')
 
     def __init__(self, name, description, owner):
         """Initialising the bucketlist"""
@@ -126,7 +126,7 @@ class Item(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(256), nullable=False, unique=True)
     description = db.Column(db.Text)
-    bucketlist_id = db.Column(db.Integer, db.ForeignKey(Bucketlist.id))
+    bucketlist_id = db.Column(db.Integer, db.ForeignKey(Bucketlist.id, ondelete='cascade'))
 
     def __init__(self, name, description, bucketlist_id):
         """Initialising an item"""

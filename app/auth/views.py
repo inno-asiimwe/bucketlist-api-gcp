@@ -38,8 +38,8 @@ def register_user():
     responses:
         201:
             description: "Successfully Registerd"
-        202:
-            description: "Failed to register"
+        409:
+            description: "Failed to register, duplicate user"
     """
     user = User.query.filter_by(username=request.data['username']).first()
 
@@ -68,7 +68,7 @@ def register_user():
         'message': 'Failed to register, duplicate user',
         'status': 'Failed!!'
     }
-    return make_response(jsonify(response)), 202
+    return make_response(jsonify(response)), 409
 
 @auth_blueprint.route('/login', methods=['POST'])
 def login_user():
@@ -146,7 +146,7 @@ def reset_password():
     responses:
         200:
             description: "Successfully changed password"
-        400:
+        401:
             description: "Failed to reset password, bad username or password"
     """
     user = User.query.filter_by(username=request.data['username']).first()
@@ -163,7 +163,7 @@ def reset_password():
         'message': 'Failed to reset password, bad username or password',
         'status': 'Failed'
     }
-    return make_response(jsonify(response)), 400
+    return make_response(jsonify(response)), 401
 
 @auth_blueprint.route('/logout', methods=['POST'])
 @auth_required
@@ -180,7 +180,9 @@ def logout_user(resp, auth_token):
           type: "string"
     responses:
         200:
-            description: "Success or Failed"
+            description: "Success"
+        401:
+            description: "Failed"
     """
     blacklist_token = BlacklistToken(token=auth_token)
     try:
@@ -195,4 +197,4 @@ def logout_user(resp, auth_token):
             "message": e,
             "status": "Failed"
         }
-        return make_response(jsonify(response)), 200
+        return make_response(jsonify(response)), 401

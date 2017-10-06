@@ -5,18 +5,21 @@ class Config:
     """The Parent configurations for the app"""
     DEBUG = False
     CSRF_ENABLED = True
-    SECRET = 'My-secret-a-long-string'
-    SQLALCHEMY_DATABASE_URI = 'postgresql://postgres:admin@localhost/bucketlist_api'
+    SECRET = os.getenv('SECRET')
+    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL')
+    
 
 class DevelopmentConfig(Config):
     """Class for development configurations"""
     DEBUG = True
+    TOKEN_TIME = 86400
 
 class TestingConfig(Config):
     """Class for the testing configurations"""
     DEBUG = True
     TESTING = True
-    SQLALCHEMY_DATABASE_URI = 'postgresql://postgres:admin@localhost/test_db'
+    SQLALCHEMY_DATABASE_URI = 'postgresql://localhost/test_db'
+    TOKEN_TIME = 2
 
 class StagingConfig(Config):
     """Class for the staging configurations"""

@@ -17,12 +17,12 @@ class TestDevelopmentConfig(TestCase):
         Running in debug mode 
         Using the bucketlist_api database and secret
         """
-        self.assertTrue(self.app.config['SECRET'] == 'My-secret-a-long-string')
+        self.assertEqual(self.app.config['SECRET'], 'My-secret-a-long-string')
         self.assertTrue(self.app.config['DEBUG'])
         self.assertFalse(current_app is None)
         self.assertTrue(
             self.app.config['SQLALCHEMY_DATABASE_URI'] ==
-            'postgresql://postgres:admin@localhost/bucketlist_api'
+            'postgresql://localhost/flask_api'
         )
 
 class TestTestingConfig(TestCase):
@@ -46,7 +46,7 @@ class TestTestingConfig(TestCase):
         self.assertTrue(self.app.config['SECRET'] == 'My-secret-a-long-string')
         self.assertTrue(
             self.app.config['SQLALCHEMY_DATABASE_URI'] ==
-            'postgresql://postgres:admin@localhost/test_db'
+            'postgresql://localhost/test_db'
             )
 
 class TestStagingConfig(TestCase):
@@ -62,7 +62,7 @@ class TestStagingConfig(TestCase):
         self.assertTrue(self.app.config['SECRET'] == 'My-secret-a-long-string')
         self.assertTrue(
             self.app.config['SQLALCHEMY_DATABASE_URI'] == 
-            'postgresql://postgres:admin@localhost/bucketlist_api')
+            'postgresql://localhost/flask_api')
 
 class TestProductionConfig(TestCase):
     """Class to test Production configurations"""
@@ -77,6 +77,6 @@ class TestProductionConfig(TestCase):
         self.assertTrue(self.app.config['SECRET'] == 'My-secret-a-long-string')
         self.assertTrue(
             self.app.config['SQLALCHEMY_DATABASE_URI'] ==
-            'postgresql://postgres:admin@localhost/bucketlist_api')
+            'postgresql://localhost/flask_api')
 
         

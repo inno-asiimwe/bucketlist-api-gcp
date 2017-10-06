@@ -76,10 +76,102 @@ def bucketlists(resp, auth_token):
     response = [bucketlist.to_json() for bucketlist in user_bucketlists]
     return make_response(jsonify(response)), 200
 
-@bucketlist_blueprint.route('/<int:b_id>', methods=['GET', 'PUT', 'DELETE'])
+# @bucketlist_blueprint.route('/<int:b_id>', methods=['GET', 'PUT', 'DELETE'])
+# @auth_required
+# def  bucketlist(resp, auth_token, b_id):
+#     """ Retrieve, edit and delete bucketlist
+#     ---
+#     tags:
+#      - "bucketlists"
+#     parameters:
+#      - in: "header"
+#        name: "Authorization"
+#        description: "Token of logged in user"
+#        required: true
+#        type: string
+#      - in: "body"
+#        name: "body"
+#        description: "Name and description of bucketlist"
+#        schema:
+#         type: "object"
+#         required:
+#          - name 
+#          - description
+#         properties:
+#          name:
+#             type: "string"
+#          description:
+#             type: "string"
+#     responses:
+#         404:
+#             description: "not found"
+#         200:
+#             description: "success"
+#      """
+#     my_bucketlist = Bucketlist.query.filter_by(id=b_id).first()
+
+#     if not my_bucketlist:
+#         abort(404)
+#     elif request.method == 'DELETE':
+#         my_bucketlist.delete()
+#         response = {
+#             'status': 'Success'
+#         }
+#         return make_response(jsonify(response)), 200
+#     elif request.method == 'PUT':
+#         my_bucketlist.name = request.data['name']
+#         my_bucketlist.description = request.data['description']
+#         my_bucketlist.save()
+#         response = {
+#             'id': my_bucketlist.id,
+#             'name': my_bucketlist.name,
+#             'description': my_bucketlist.description,
+#             'owner': my_bucketlist.owner
+#         }
+#         return make_response(jsonify(response)), 200
+
+@bucketlist_blueprint.route('/<int:b_id>', methods=['GET'])
 @auth_required
-def  bucketlist(resp, auth_token, b_id):
-    """ Retrieve, edit and delete bucketlist
+def get_bucketlist(resp, auth_token, b_id):
+    """ Retrieve bucketlist
+    ---
+    tags:
+     - "bucketlist"
+    parameters:
+     - in: "header"
+       name: "Authorization"
+       description: "Token of logged in user"
+       required: true
+       type: string
+     - in: "body"
+       name: "body"
+       description: "Name and description of bucketlist"
+       schema:
+        type: "object"
+        required:
+         - name 
+         - description
+        properties:
+         name:
+            type: "string"
+         description:
+            type: "string"
+    responses:
+        404:
+            description: "not found"
+        200:
+            description: "success"
+     """
+    my_bucketlist = Bucketlist.query.filter_by(id=b_id).first()
+    if my_bucketlist:
+        response = my_bucketlist.to_json()
+        return make_response(jsonify(response)), 200
+    abort(404)
+
+@bucketlist_blueprint.route('/<int:b_id>', methods=['DELETE'])
+@auth_required
+def delete_bucketlist(resp, auth_token, b_id):
+    """ Delete bucketlist
     ---
     tags:
      - "bucketlists"
@@ -108,34 +200,68 @@ def  bucketlist(resp, auth_token, b_id):
         200:
             description: "success"
      """
-    my_bucketlist = Bucketlist.query.filter_by(id=b_id).first()
 
-    if not my_bucketlist:
-        abort(404)
-    elif request.method == 'DELETE':
+    my_bucketlist = Bucketlist.query.filter_by(id=b_id).first()
+    if my_bucketlist:
         my_bucketlist.delete()
         response = {
             'status': 'Success'
         }
         return make_response(jsonify(response)), 200
-    elif request.method == 'PUT':
-        my_bucketlist.name = request.data['name']
-        my_bucketlist.description = request.data['description']
-        my_bucketlist.save()
+    abort(404)
+
+@bucketlist_blueprint.route('/<int:b_id>', methods=['PUT'])
+@auth_required
+def edit_bucketlist(resp, auth_token, b_id):
+    """ Edit bucketlist
+    ---
+    tags:
+     - "bucketlists"
+    parameters:
+     - in: "header"
+       name: "Authorization"
+       description: "Token of logged in user"
+       required: true
+       type: string
+     - in: "body"
+       name: "body"
+       description: "Name and description of bucketlist"
+       schema:
+        type: "object"
+        required:
+         - name 
+         - description
+        properties:
+         name:
+            type: "string"
+         description:
+            type: "string"
+    responses:
+        404:
+            description: "not found"
+        200:
+            description: "success"
+        409:
+            description: "duplicates
+     """
+    my_bucketlist = Bucketlist.query.filter_by(id=b_id).first()
+    if my_bucketlist:
+        duplicate = Bucketlist.query.filter_by(name=request.data['name'], owner=resp).first()
+        if not duplicate:
+            my_bucketlist.name = request.data['name']
+            my_bucketlist.description = request.data['description']
+            my_bucketlist.save()
+            response = my_bucketlist.to_json()
+            return make_response(jsonify(response)), 200
         response = {
-            'id': my_bucketlist.id,
-            'name': my_bucketlist.name,
-            'description': my_bucketlist.description,
-            'owner': my_bucketlist.owner
+            'status': 'Failed'
         }
-        return make_response(jsonify(response)), 200
-    response = {
-        'id': my_bucketlist.id,
-        'name': my_bucketlist.name,
-        'description': my_bucketlist.description,
-        'owner': my_bucketlist.owner
-    }
-    return make_response(jsonify(response)), 200
+        return make_response(jsonify(response)), 409
+    abort(404)
+
+            
+
+
 
 @bucketlist_blueprint.route('/<int:b_id>/items/', methods=['POST'])
 @auth_required
@@ -235,21 +361,29 @@ def edit_bucketlist_item(resp, auth_token, b_id, i_id):
             description: "success"
         404:
             description: "Failed"
+        409:
+            description: "Duplicate name"
     """
     my_item = Item.query.filter_by(bucketlist_id=b_id, id=i_id).first()
     if my_item:
         if request.method == 'PUT':
-            my_item.name = request.data['name']
-            my_item.description = request.data['description']
-            my_item.save()
+            duplicate = Item.query.filter_by(name=request.data['name'], bucketlist_id=b_id).first()
+            if not duplicate:
+                my_item.name = request.data['name']
+                my_item.description = request.data['description']
+                my_item.save()
+                response = {
+                    'status':'Success',
+                    'id': my_item.id,
+                    'name': my_item.name,
+                    'description':my_item.description,
+                    'bucketlist_id': my_item.bucketlist_id
+                }
+                return make_response(jsonify(response)), 200
             response = {
-                'status':'Success',
-                'id': my_item.id,
-                'name': my_item.name,
-                'description':my_item.description,
-                'bucketlist_id': my_item.bucketlist_id
+                'status':'Failed'
             }
-            return make_response(jsonify(response)), 200
+            return make_response(jsonify(response)), 409
         if request.method == 'DELETE':
             my_item.delete()
             response = {

@@ -2,8 +2,7 @@ language: python
 python:
   - "3.6"
 env:
-  - "SECRET='My-secret-a-long-string'"
-  - "APP_SETTINGS='development'"
+  - "SECRET='My-secret-a-long-string'", "APP_SETTINGS='development'"
 services:
   - postgresql
 

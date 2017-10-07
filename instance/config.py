@@ -7,12 +7,12 @@ class Config:
     CSRF_ENABLED = True
     SECRET = os.getenv('SECRET')
     SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL')
+    TOKEN_TIME = 86400
     
 
 class DevelopmentConfig(Config):
     """Class for development configurations"""
     DEBUG = True
-    TOKEN_TIME = 86400
 
 class TestingConfig(Config):
     """Class for the testing configurations"""

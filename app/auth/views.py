@@ -152,7 +152,7 @@ def reset_password():
     user = User.query.filter_by(username=request.data['username']).first()
 
     if user and user.password_is_valid(request.data['old_password']):
-        user.password = Bcrypt().generate_password_hash(password=request.data['new_password'])
+        user.password = Bcrypt().generate_password_hash(password=request.data['new_password']).decode()
         user.save()
         response = {
             'message': 'Successfully changed password',

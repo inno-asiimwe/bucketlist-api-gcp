@@ -209,7 +209,7 @@ def edit_bucketlist(resp, auth_token, b_id):
 
 
 
-@bucketlist_blueprint.route('/<int:b_id>/items/', methods=['POST'])
+@bucketlist_blueprint.route('/<int:b_id>/items', methods=['POST'])
 @auth_required
 def create_bucketlist_item(resp, auth_token, b_id):
     """Create a bucketlist item

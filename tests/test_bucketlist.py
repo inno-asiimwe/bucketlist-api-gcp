@@ -218,9 +218,10 @@ class TestBucketlist(BaseTestCase):
             response = self.client.put(
                 '/bucketlists/1',
                 headers=dict(Authorization='Bearer ' + access_token),
-                data=dict(
-                    name='before 30'
-                ),
+                data=json.dumps(dict(
+                    name='before 30',
+                    description='Things to do before 30'
+                )),
                 content_type='application/json'
             )
             self.assertEqual(res_register.status_code, 201)
@@ -299,7 +300,7 @@ class TestBucketlist(BaseTestCase):
                 content_type='application/json'
             )
             response = self.client.post(
-                '/bucketlists/1/items/',
+                '/bucketlists/1/items',
                 headers=dict(Authorization='Bearer '+ access_token),
                 data=json.dumps(dict(
                     name='Build a house',
@@ -332,7 +333,7 @@ class TestBucketlist(BaseTestCase):
                 content_type='application/json'
             )
             response_1 = self.client.post(
-                '/bucketlists/1/items/',
+                '/bucketlists/1/items',
                 headers=dict(Authorization='Bearer '+ access_token),
                 data=json.dumps(dict(
                     name='Build a house',
@@ -342,7 +343,7 @@ class TestBucketlist(BaseTestCase):
                 content_type='application/json'
             )
             response_2 = self.client.post(
-                '/bucketlists/1/items/',
+                '/bucketlists/1/items',
                 headers=dict(Authorization='Bearer '+ access_token),
                 data=json.dumps(dict(
                     name='Build a house',
@@ -376,7 +377,7 @@ class TestBucketlist(BaseTestCase):
                 content_type='application/json'
             )
             response = self.client.post(
-                '/bucketlists/2/items/',
+                '/bucketlists/2/items',
                 headers=dict(Authorization='Bearer '+ access_token),
                 data=json.dumps(dict(
                     name='Build a house',
@@ -408,7 +409,7 @@ class TestBucketlist(BaseTestCase):
                 content_type='application/json'
             )
             response_1 = self.client.post(
-                '/bucketlists/1/items/',
+                '/bucketlists/1/items',
                 headers=dict(Authorization='Bearer '+ access_token),
                 data=json.dumps(dict(
                     name='Build a house',
@@ -453,7 +454,7 @@ class TestBucketlist(BaseTestCase):
                 content_type='application/json'
             )
             response_1 = self.client.post(
-                '/bucketlists/1/items/',
+                '/bucketlists/1/items',
                 headers=dict(Authorization='Bearer '+ access_token),
                 data=json.dumps(dict(
                     name='Build a house',

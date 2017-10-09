@@ -82,7 +82,7 @@ def get_bucketlist(resp, auth_token, b_id):
     """ Retrieve bucketlist
     ---
     tags:
-     - "bucketlist"
+     - "bucketlists"
     parameters:
      - in: "header"
        name: "Authorization"
@@ -175,7 +175,6 @@ def edit_bucketlist(resp, auth_token, b_id):
        schema:
         type: "object"
         required:
-         - name 
          - description
         properties:
          name:
@@ -188,26 +187,24 @@ def edit_bucketlist(resp, auth_token, b_id):
         200:
             description: "success"
         409:
-            description: "duplicates
+            description: "duplicates"
      """
     my_bucketlist = Bucketlist.query.filter_by(id=b_id).first()
+    name = request.data['name']
+    description =request.data['description']
     if my_bucketlist:
-        duplicate = Bucketlist.query.filter_by(name=request.data['name'], owner=resp).first()
-        if not duplicate:
-            my_bucketlist.name = request.data['name']
-            my_bucketlist.description = request.data['description']
-            my_bucketlist.save()
-            response = my_bucketlist.to_json()
-            return make_response(jsonify(response)), 200
-        response = {
-            'status': 'Failed'
-        }
-        return make_response(jsonify(response)), 409
+        if my_bucketlist.name != name:
+            duplicate = Bucketlist.query.filter_by(name=name, owner=resp).first()
+            if not duplicate:
+                my_bucketlist.name = name
+            else:
+                return make_response(jsonify({'status': 'Failed'})), 409
+        if my_bucketlist.description != description:
+            my_bucketlist.description = description
+        my_bucketlist.save()
+        response = my_bucketlist.to_json()
+        return make_response(jsonify(response)), 200
     abort(404)
-
-            
-
-
 
 @bucketlist_blueprint.route('/<int:b_id>/items', methods=['POST'])
 @auth_required

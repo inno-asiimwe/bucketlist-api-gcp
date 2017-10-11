@@ -98,7 +98,7 @@ class TestBucketlist(BaseTestCase):
             self.assertEqual(res_register.status_code, 201)
             self.assertEqual(res_login.status_code, 200)
             self.assertEqual(response1.status_code, 201)
-            self.assertEqual(response2.status_code, 202)
+            self.assertEqual(response2.status_code, 400)
             self.assertIn('before 30', data1['name'])
             self.assertIn('Failed', data2['status'])
 
@@ -357,7 +357,7 @@ class TestBucketlist(BaseTestCase):
             self.assertEqual(res_login.status_code, 200)
             self.assertEqual(res_bucketlist.status_code, 201)
             self.assertEqual(response_1.status_code, 201)
-            self.assertEqual(response_2.status_code, 202)
+            self.assertEqual(response_2.status_code, 409)
             self.assertIn('Failed', data_2['status'])
     def test_create_item_invalid_bucketlist(self):
         """ """

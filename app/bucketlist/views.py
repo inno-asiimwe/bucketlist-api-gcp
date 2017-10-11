@@ -31,10 +31,10 @@ def bucketlists(resp, auth_token):
           description:
            type: "string"
     responses:
-        202:
-            description: "success"
-        201:
+        400:
             description: "Failed"
+        201:
+            description: "Success"
         200:
             description: "success"
      """
@@ -61,7 +61,7 @@ def bucketlists(resp, auth_token):
                 'status': 'Failed',
                 'message': str(e)
             }
-            return make_response(jsonify(response)), 202
+            return make_response(jsonify(response)), 400
     elif limit:
         user_bucketlists = Bucketlist.query.filter_by(owner=resp).limit(int(limit))
         response = [bucketlist.to_json() for bucketlist in user_bucketlists]
@@ -191,7 +191,7 @@ def edit_bucketlist(resp, auth_token, b_id):
      """
     my_bucketlist = Bucketlist.query.filter_by(id=b_id).first()
     name = request.data['name']
-    description =request.data['description']
+    description = request.data['description']
     if my_bucketlist:
         if my_bucketlist.name != name:
             duplicate = Bucketlist.query.filter_by(name=name, owner=resp).first()
@@ -236,10 +236,12 @@ def create_bucketlist_item(resp, auth_token, b_id):
     responses:
         404:
             description: "resource not found"
-        202:
+        400:
             description: "Failed"
         201:
             description: "success"
+        409:
+            description: "Failed, Duplicate Item"
     """
     if request.method == 'POST':
         my_bucketlist = Bucketlist.query.filter_by(id=b_id, owner=resp).first()
@@ -257,7 +259,7 @@ def create_bucketlist_item(resp, auth_token, b_id):
                         'status': 'Failed',
                         'message': str(e)
                     }
-                    return make_response(jsonify(response)), 202
+                    return make_response(jsonify(response)), 400
                 response = {
                     'status': 'Success',
                     'id': new_item.id,
@@ -270,7 +272,7 @@ def create_bucketlist_item(resp, auth_token, b_id):
                 'status': 'Failed',
                 'message': 'Item already exists'
             }
-            return make_response(jsonify(response)), 202
+            return make_response(jsonify(response)), 409
         abort(404)
 
 @bucketlist_blueprint.route('/<int:b_id>/items/<int:i_id>', methods=['PUT', 'DELETE'])

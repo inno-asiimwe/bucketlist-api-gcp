@@ -40,11 +40,27 @@ def register_user():
             description: "Successfully Registerd"
         409:
             description: "Failed to register, duplicate user"
+        400:
+            description: "Failed to register, Invalid payload"
     """
-    user = User.query.filter_by(username=request.data['username']).first()
+    post_data = request.data
+    keys = ['firstname', 'lastname', 'username', 'password', 'email']
+    if not post_data:
+        response = {
+            'status': 'Failed',
+            'message': 'Invalid Payload'
+        }
+        return make_response(jsonify(response)), 400
+    for key in keys:
+        if key not in post_data:
+            response = {
+                'status': 'Failed',
+                'message': 'Invalid Payload'
+            }
+            return make_response(jsonify(response)), 400
 
+    user = User.query.filter_by(username=request.data['username']).first()
     if not user:
-        post_data = request.data
         firstname = post_data['firstname']
         lastname = post_data['lastname']
         username = post_data['username']

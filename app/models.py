@@ -24,7 +24,7 @@ class User(db.Model):
         self.email = email
 
     def password_is_valid(self, password):
-        """Method validates password against its harsh"""
+        """Method validates password against its hash"""
         return Bcrypt().check_password_hash(self.password, password)
 
     def encode_auth_token(self, user_id):

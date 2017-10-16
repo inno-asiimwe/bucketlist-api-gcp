@@ -44,6 +44,7 @@ def register_user():
     user = User.query.filter_by(username=request.data['username']).first()
 
     if not user:
+        post_data = request.data
         firstname = post_data['firstname']
         lastname = post_data['lastname']
         username = post_data['username']

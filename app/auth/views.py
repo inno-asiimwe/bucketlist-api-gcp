@@ -51,19 +51,26 @@ def register_user():
         password = post_data['password']
         email = post_data['email']
 
-        user = User(
-            firstname=firstname,
-            lastname=lastname,
-            username=username,
-            password=password,
-            email=email)
-        user.save()
+        try:
+            user = User(
+                firstname=firstname,
+                lastname=lastname,
+                username=username,
+                password=password,
+                email=email)
+            user.save()
 
-        response = {
-            'message':'Successfully registered!',
-            'status':'Success'
-        }
-        return make_response(jsonify(response)), 201
+            response = {
+                'message':'Successfully registered!',
+                'status':'Success'
+            }
+            return make_response(jsonify(response)), 201
+        except Exception as e:
+            response = {
+                'status':'Failed!!',
+                'message': str(e)
+            }
+            return make_response(jsonify(response)), 400
     response = {
         'message': 'Failed to register, duplicate user',
         'status': 'Failed!!'

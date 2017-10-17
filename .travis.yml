@@ -23,6 +23,6 @@ install:
 script: nosetests --with-coverage --cover-package=app
 
 after_success: 
-  - coveralls
+  - coveralls -i
   - codeclimate-test-reporter
 

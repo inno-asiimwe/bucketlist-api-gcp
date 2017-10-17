@@ -275,7 +275,7 @@ def create_bucketlist_item(resp, auth_token, b_id):
             return make_response(jsonify(response)), 409
         abort(404)
 
-@bucketlist_blueprint.route('/<int:b_id>/items/<int:i_id>', methods=['PUT', 'DELETE'])
+@bucketlist_blueprint.route('/<int:b_id>/items/<int:i_id>', methods=['PUT'])
 @auth_required
 def edit_bucketlist_item(resp, auth_token, b_id, i_id):
     """"Edit and delete bucketlist item
@@ -340,7 +340,50 @@ def edit_bucketlist_item(resp, auth_token, b_id, i_id):
             my_item.save()
             response = my_item.to_json()
             return make_response(jsonify(response)), 200
-            
+    response = {
+        'status': 'Failed',
+        'message': 'Item not found'
+    }
+    return make_response((jsonify(response))), 404
+
+@bucketlist_blueprint.route('/<int:b_id>/items/<int:i_id>', methods=['DELETE'])
+@auth_required
+def delete_bucketlist_item(resp, auth_token, b_id, i_id):
+    """"Edit and delete bucketlist item
+    ---
+    tags:
+     - "bucketlists"
+    parameters:
+     - in: "headers"
+       name: "Authorization"
+       required: true
+       type: string
+       description: "Token of logged in user"
+     - in: "body"
+       name: "body"
+       description: "Name and description of bucketlist item"
+       schema:
+        type: "object"
+        required:
+         - name
+         - description
+        properties:
+            name:
+                type: "string"
+            description:
+                type: "string"
+    responses:
+        200:
+            description: "success"
+        404:
+            description: "Failed"
+        409:
+            description: "Duplicate name"
+    """
+    
+    my_item = Item.query.filter_by(bucketlist_id=b_id, id=i_id).first()
+    
+    if my_item:
         if request.method == 'DELETE':
             my_item.delete()
             response = {
@@ -352,5 +395,7 @@ def edit_bucketlist_item(resp, auth_token, b_id, i_id):
         'message': 'Item not found'
     }
     return make_response((jsonify(response))), 404
+
+    
      
     

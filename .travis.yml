@@ -10,6 +10,7 @@ before_script:
   - psql -c "create database flask_api;" -U postgres
   - export SECRET="My-secret-a-long-string"
   - export DATABASE_URL="postgresql://localhost/flask_api"
+  - export CODECLIMATE_REPO_TOKEN=20fec4e070755d3b4bf23c4173583637318860b099139e2935e62db853d6dd30
   
   
 
@@ -21,5 +22,7 @@ install:
 # command to run tests
 script: nosetests --with-coverage --cover-package=app
 
-after_success: coveralls
+after_success: 
+  - coveralls
+  - codeclimate-test-reporter
 

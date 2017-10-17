@@ -309,26 +309,38 @@ def edit_bucketlist_item(resp, auth_token, b_id, i_id):
         409:
             description: "Duplicate name"
     """
+    request_data = request.data
+    keys = ['name', 'description']
+    if not request_data:
+        response = {
+            'status': 'Failed',
+            'message': 'Invalid Payload'
+        }
+        return make_response(jsonify(response)), 400
+    for key in keys:
+        if key not in request_data:
+            response = {
+            'status': 'Failed',
+            'message': 'Invalid Payload'
+        }
+            return make_response(jsonify(response)), 400
     my_item = Item.query.filter_by(bucketlist_id=b_id, id=i_id).first()
+    name = request_data['name']
+    description = request_data['description']
     if my_item:
         if request.method == 'PUT':
-            duplicate = Item.query.filter_by(name=request.data['name'], bucketlist_id=b_id).first()
-            if not duplicate:
-                my_item.name = request.data['name']
+            if name and (my_item.name != name):
+                duplicate = Item.query.filter_by(name=request.data['name'], bucketlist_id=b_id).first()
+                if not duplicate:
+                    my_item.name = request.data['name']
+                else:
+                    return make_response(jsonify({'status': 'Failed'})), 409
+            if my_item.description != description:
                 my_item.description = request.data['description']
-                my_item.save()
-                response = {
-                    'status':'Success',
-                    'id': my_item.id,
-                    'name': my_item.name,
-                    'description':my_item.description,
-                    'bucketlist_id': my_item.bucketlist_id
-                }
-                return make_response(jsonify(response)), 200
-            response = {
-                'status':'Failed'
-            }
-            return make_response(jsonify(response)), 409
+            my_item.save()
+            response = my_item.to_json()
+            return make_response(jsonify(response)), 200
+            
         if request.method == 'DELETE':
             my_item.delete()
             response = {

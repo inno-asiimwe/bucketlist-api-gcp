@@ -2,6 +2,7 @@
 
 [![Build Status](https://travis-ci.org/inno-asiimwe/bucketlist-api.svg?branch=development)](https://travis-ci.org/inno-asiimwe/bucketlist-api)
 [![Coverage Status](https://coveralls.io/repos/github/inno-asiimwe/bucketlist-api/badge.svg?branch=development)](https://coveralls.io/github/inno-asiimwe/bucketlist-api?branch=development)
+[![Code Climate](https://codeclimate.com/github/inno-asiimwe/bucketlist-api/badges/gpa.svg)](https://codeclimate.com/github/inno-asiimwe/bucketlist-api)
 
 ## Technologies used 
 1. Python

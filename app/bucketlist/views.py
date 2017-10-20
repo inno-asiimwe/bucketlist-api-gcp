@@ -4,6 +4,7 @@ from app.utils import auth_required
 from app.models import Bucketlist, Item
 from . import bucketlist_blueprint
 
+
 @bucketlist_blueprint.route('', methods=['POST', 'GET'])
 @auth_required
 def bucketlists(resp, auth_token):
@@ -63,7 +64,8 @@ def bucketlists(resp, auth_token):
             }
             return make_response(jsonify(response)), 400
     elif limit:
-        user_bucketlists = Bucketlist.query.filter_by(owner=resp).limit(int(limit))
+        user_bucketlists = Bucketlist.query.filter_by(
+            owner=resp).limit(int(limit))
         response = [bucketlist.to_json() for bucketlist in user_bucketlists]
         return make_response(jsonify(response)), 200
     elif q:
@@ -75,6 +77,7 @@ def bucketlists(resp, auth_token):
     user_bucketlists = Bucketlist.get_all_bucketlists(resp)
     response = [bucketlist.to_json() for bucketlist in user_bucketlists]
     return make_response(jsonify(response)), 200
+
 
 @bucketlist_blueprint.route('/<int:b_id>', methods=['GET'])
 @auth_required
@@ -95,7 +98,7 @@ def get_bucketlist(resp, auth_token, b_id):
        schema:
         type: "object"
         required:
-         - name 
+         - name
          - description
         properties:
          name:
@@ -113,6 +116,7 @@ def get_bucketlist(resp, auth_token, b_id):
         response = my_bucketlist.to_json()
         return make_response(jsonify(response)), 200
     abort(404)
+
 
 @bucketlist_blueprint.route('/<int:b_id>', methods=['DELETE'])
 @auth_required
@@ -133,7 +137,7 @@ def delete_bucketlist(resp, auth_token, b_id):
        schema:
         type: "object"
         required:
-         - name 
+         - name
          - description
         properties:
          name:
@@ -155,6 +159,7 @@ def delete_bucketlist(resp, auth_token, b_id):
         }
         return make_response(jsonify(response)), 200
     abort(404)
+
 
 @bucketlist_blueprint.route('/<int:b_id>', methods=['PUT'])
 @auth_required
@@ -194,7 +199,8 @@ def edit_bucketlist(resp, auth_token, b_id):
     description = request.data['description']
     if my_bucketlist:
         if my_bucketlist.name != name:
-            duplicate = Bucketlist.query.filter_by(name=name, owner=resp).first()
+            duplicate = Bucketlist.query.filter_by(
+                name=name, owner=resp).first()
             if not duplicate:
                 my_bucketlist.name = name
             else:
@@ -205,6 +211,7 @@ def edit_bucketlist(resp, auth_token, b_id):
         response = my_bucketlist.to_json()
         return make_response(jsonify(response)), 200
     abort(404)
+
 
 @bucketlist_blueprint.route('/<int:b_id>/items', methods=['POST'])
 @auth_required
@@ -246,7 +253,8 @@ def create_bucketlist_item(resp, auth_token, b_id):
     if request.method == 'POST':
         my_bucketlist = Bucketlist.query.filter_by(id=b_id, owner=resp).first()
         if my_bucketlist:
-            item = Item.query.filter_by(bucketlist_id=b_id, name=request.data['name']).first()
+            item = Item.query.filter_by(
+                bucketlist_id=b_id, name=request.data['name']).first()
             if not item:
                 try:
                     new_item = Item(
@@ -274,6 +282,7 @@ def create_bucketlist_item(resp, auth_token, b_id):
             }
             return make_response(jsonify(response)), 409
         abort(404)
+
 
 @bucketlist_blueprint.route('/<int:b_id>/items/<int:i_id>', methods=['PUT'])
 @auth_required
@@ -320,9 +329,9 @@ def edit_bucketlist_item(resp, auth_token, b_id, i_id):
     for key in keys:
         if key not in request_data:
             response = {
-            'status': 'Failed',
-            'message': 'Invalid Payload'
-        }
+                'status': 'Failed',
+                'message': 'Invalid Payload'
+            }
             return make_response(jsonify(response)), 400
     my_item = Item.query.filter_by(bucketlist_id=b_id, id=i_id).first()
     name = request_data['name']
@@ -330,7 +339,8 @@ def edit_bucketlist_item(resp, auth_token, b_id, i_id):
     if my_item:
         if request.method == 'PUT':
             if name and (my_item.name != name):
-                duplicate = Item.query.filter_by(name=request.data['name'], bucketlist_id=b_id).first()
+                duplicate = Item.query.filter_by(
+                    name=request.data['name'], bucketlist_id=b_id).first()
                 if not duplicate:
                     my_item.name = request.data['name']
                 else:
@@ -345,6 +355,7 @@ def edit_bucketlist_item(resp, auth_token, b_id, i_id):
         'message': 'Item not found'
     }
     return make_response((jsonify(response))), 404
+
 
 @bucketlist_blueprint.route('/<int:b_id>/items/<int:i_id>', methods=['DELETE'])
 @auth_required
@@ -380,9 +391,9 @@ def delete_bucketlist_item(resp, auth_token, b_id, i_id):
         409:
             description: "Duplicate name"
     """
-    
+
     my_item = Item.query.filter_by(bucketlist_id=b_id, id=i_id).first()
-    
+
     if my_item:
         if request.method == 'DELETE':
             my_item.delete()
@@ -395,7 +406,3 @@ def delete_bucketlist_item(resp, auth_token, b_id, i_id):
         'message': 'Item not found'
     }
     return make_response((jsonify(response))), 404
-
-    
-     
-    

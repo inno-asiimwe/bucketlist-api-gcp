@@ -1,9 +1,10 @@
-from . import auth_blueprint
-from flask import make_response, jsonify , request
-from app.models import User, BlacklistToken
-import jwt
+"""Module contains all the views for the auth blueprint """
+from flask import make_response, jsonify, request
 from flask_bcrypt import Bcrypt
+from app.models import User, BlacklistToken
 from app.utils import auth_required
+from . import auth_blueprint
+
 
 @auth_blueprint.route('/register', methods=['POST'])
 def register_user():
@@ -77,13 +78,13 @@ def register_user():
             user.save()
 
             response = {
-                'message':'Successfully registered!',
-                'status':'Success'
+                'message': 'Successfully registered!',
+                'status': 'Success'
             }
             return make_response(jsonify(response)), 201
         except Exception as e:
             response = {
-                'status':'Failed!!',
+                'status': 'Failed!!',
                 'message': str(e)
             }
             return make_response(jsonify(response)), 400
@@ -92,6 +93,7 @@ def register_user():
         'status': 'Failed!!'
     }
     return make_response(jsonify(response)), 409
+
 
 @auth_blueprint.route('/login', methods=['POST'])
 def login_user():
@@ -138,6 +140,7 @@ def login_user():
     }
     return make_response(jsonify(response)), 401
 
+
 @auth_blueprint.route('/reset-password', methods=['POST'])
 def reset_password():
     """Reset User password
@@ -175,7 +178,8 @@ def reset_password():
     user = User.query.filter_by(username=request.data['username']).first()
 
     if user and user.password_is_valid(request.data['old_password']):
-        user.password = Bcrypt().generate_password_hash(password=request.data['new_password']).decode()
+        user.password = Bcrypt().generate_password_hash(
+            password=request.data['new_password']).decode()
         user.save()
         response = {
             'message': 'Successfully changed password',
@@ -187,6 +191,7 @@ def reset_password():
         'status': 'Failed'
     }
     return make_response(jsonify(response)), 401
+
 
 @auth_blueprint.route('/logout', methods=['POST'])
 @auth_required
@@ -211,8 +216,8 @@ def logout_user(resp, auth_token):
     try:
         blacklist_token.save()
         response = {
-            'message':"Successfully logged out",
-            'status':"Success"
+            'message': "Successfully logged out",
+            'status': "Success"
         }
         return make_response(jsonify(response)), 200
     except Exception as e:

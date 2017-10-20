@@ -1,6 +1,7 @@
 """Module contains configurations for the app"""
 import os
 
+
 class Config:
     """The Parent configurations for the app"""
     DEBUG = False
@@ -8,11 +9,12 @@ class Config:
     SECRET = os.getenv('SECRET')
     SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL')
     TOKEN_TIME = 86400
-    
+
 
 class DevelopmentConfig(Config):
     """Class for development configurations"""
     DEBUG = True
+
 
 class TestingConfig(Config):
     """Class for the testing configurations"""
@@ -21,9 +23,11 @@ class TestingConfig(Config):
     SQLALCHEMY_DATABASE_URI = 'postgresql://localhost/test_db'
     TOKEN_TIME = 2
 
+
 class StagingConfig(Config):
     """Class for the staging configurations"""
     DEBUG = True
+
 
 class ProductionConfig(Config):
     """Class for the Production configurations"""
@@ -31,8 +35,8 @@ class ProductionConfig(Config):
     TESTING = False
 
 app_config = {
-    'development':DevelopmentConfig,
-    'testing':TestingConfig,
-    'staging':StagingConfig,
-    'production':ProductionConfig
+    'development': DevelopmentConfig,
+    'testing': TestingConfig,
+    'staging': StagingConfig,
+    'production': ProductionConfig
 }

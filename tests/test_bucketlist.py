@@ -121,7 +121,7 @@ class TestBucketlist(BaseTestCase):
                 )
             response = self.client.get(
                 '/bucketlists',
-                headers=dict(Authorization="Bearer "+ access_token),
+                headers=dict(Authorization="Bearer " + access_token),
                 content_type='application/json'
             )
             data = json.loads(response.data.decode())
@@ -130,6 +130,7 @@ class TestBucketlist(BaseTestCase):
             self.assertEqual(res_post.status_code, 201)
             self.assertEqual(response.status_code, 200)
             self.assertIn('before 30', data[0]['name'])
+
     def test_get_bucketlist(self):
         """Tests api can get a bucketlist by id """
         with self.client:
@@ -174,7 +175,7 @@ class TestBucketlist(BaseTestCase):
             self.assertEqual(res_register.status_code, 201)
             self.assertEqual(res_login.status_code, 200)
             self.assertEqual(response.status_code, 404)
-            
+
     def test_put_bucketlist(self):
         """Tests API can update bucketlist"""
         with self.client:
@@ -301,7 +302,7 @@ class TestBucketlist(BaseTestCase):
             )
             response = self.client.post(
                 '/bucketlists/1/items',
-                headers=dict(Authorization='Bearer '+ access_token),
+                headers=dict(Authorization='Bearer ' + access_token),
                 data=json.dumps(dict(
                     name='Build a house',
                     description='Build a rental house',
@@ -315,6 +316,7 @@ class TestBucketlist(BaseTestCase):
             self.assertEqual(res_bucketlist.status_code, 201)
             self.assertEqual(response.status_code, 201)
             self.assertIn('Build a rental house', data['description'])
+
     def test_create_item_invalid_name(self):
         """Tests API doesnot create items with the same name in a bucketlist"""
         with self.client:
@@ -334,7 +336,7 @@ class TestBucketlist(BaseTestCase):
             )
             response_1 = self.client.post(
                 '/bucketlists/1/items',
-                headers=dict(Authorization='Bearer '+ access_token),
+                headers=dict(Authorization='Bearer ' + access_token),
                 data=json.dumps(dict(
                     name='Build a house',
                     description='Build a rental house',
@@ -344,7 +346,7 @@ class TestBucketlist(BaseTestCase):
             )
             response_2 = self.client.post(
                 '/bucketlists/1/items',
-                headers=dict(Authorization='Bearer '+ access_token),
+                headers=dict(Authorization='Bearer ' + access_token),
                 data=json.dumps(dict(
                     name='Build a house',
                     description='Build a rental house',
@@ -359,6 +361,7 @@ class TestBucketlist(BaseTestCase):
             self.assertEqual(response_1.status_code, 201)
             self.assertEqual(response_2.status_code, 409)
             self.assertIn('Failed', data_2['status'])
+
     def test_create_item_invalid_bucketlist(self):
         """ """
         with self.client:
@@ -378,7 +381,7 @@ class TestBucketlist(BaseTestCase):
             )
             response = self.client.post(
                 '/bucketlists/2/items',
-                headers=dict(Authorization='Bearer '+ access_token),
+                headers=dict(Authorization='Bearer ' + access_token),
                 data=json.dumps(dict(
                     name='Build a house',
                     description='Build a rental house',
@@ -410,7 +413,7 @@ class TestBucketlist(BaseTestCase):
             )
             response_1 = self.client.post(
                 '/bucketlists/1/items',
-                headers=dict(Authorization='Bearer '+ access_token),
+                headers=dict(Authorization='Bearer ' + access_token),
                 data=json.dumps(dict(
                     name='Build a house',
                     description='Build a family house',
@@ -420,7 +423,7 @@ class TestBucketlist(BaseTestCase):
             )
             response = self.client.put(
                 '/bucketlists/1/items/1',
-                headers=dict(Authorization='Bearer '+ access_token),
+                headers=dict(Authorization='Bearer ' + access_token),
                 data=json.dumps(dict(
                     name='Build a home',
                     description='Build a family house',
@@ -455,7 +458,7 @@ class TestBucketlist(BaseTestCase):
             )
             response_1 = self.client.post(
                 '/bucketlists/1/items',
-                headers=dict(Authorization='Bearer '+ access_token),
+                headers=dict(Authorization='Bearer ' + access_token),
                 data=json.dumps(dict(
                     name='Build a house',
                     description='Build a rental house',
@@ -553,4 +556,3 @@ class TestBucketlist(BaseTestCase):
             self.assertEqual(res_bucketlist2.status_code, 201)
             self.assertEqual(res_bucketlist3.status_code, 201)
             self.assertEqual(2, len(data))
-            

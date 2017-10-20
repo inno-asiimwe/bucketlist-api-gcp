@@ -1,14 +1,18 @@
 """The module contains tests for the authentication service"""
-from .base import BaseTestCase
 import json
 import time
-from mock import patch
+from .base import BaseTestCase
+
 
 class TestAuth(BaseTestCase):
     """Class contains tests to test the authentication service"""
 
     def test_register_success(self):
-        """Tests successful registration, status code should be 201, with a success message"""
+        """
+        Tests successful registration,
+        status code should be 201,
+        with a success message
+        """
         with self.client:
             response = self.client.post(
                 '/auth/register',
@@ -53,8 +57,11 @@ class TestAuth(BaseTestCase):
                 )
             data = json.loads(response.data.decode())
             self.assertEqual(response.status_code, 409)
-            self.assertIn('Failed to register, duplicate user', data['message'])
+            self.assertIn(
+                'Failed to register, duplicate user',
+                data['message'])
             self.assertIn('Failed!!', data['status'])
+
     def test_login_success(self):
         """Tests a successful login"""
         with self.client:
@@ -97,7 +104,9 @@ class TestAuth(BaseTestCase):
             )
             data = json.loads(response.data.decode())
             self.assertEqual(response.status_code, 401)
-            self.assertIn("Failed to login, unknown username or password", data['message'])
+            self.assertIn(
+                "Failed to login, unknown username or password",
+                data['message'])
             self.assertIn('Failed', data['status'])
 
     def test_login_wrong_password(self):
@@ -125,7 +134,9 @@ class TestAuth(BaseTestCase):
             )
             data = json.loads(response.data.decode())
             self.assertEqual(response.status_code, 401)
-            self.assertIn("Failed to login, unknown username or password", data['message'])
+            self.assertIn(
+                "Failed to login, unknown username or password",
+                data['message'])
             self.assertIn('Failed', data['status'])
 
     def test_reset_password_success(self):
@@ -171,7 +182,9 @@ class TestAuth(BaseTestCase):
             )
             data = json.loads(response.data.decode())
             self.assertEqual(response.status_code, 401)
-            self.assertIn('Failed to reset password, bad username or password', data['message'])
+            self.assertIn(
+                'Failed to reset password, bad username or password',
+                data['message'])
             self.assertIn('Failed', data['status'])
 
     def test_reset_password_wrongpassword(self):
@@ -202,7 +215,9 @@ class TestAuth(BaseTestCase):
             data = json.loads(response.data.decode())
             self.assertEqual(res_register.status_code, 201)
             self.assertEqual(response.status_code, 401)
-            self.assertIn('Failed to reset password, bad username or password', data['message'])
+            self.assertIn(
+                'Failed to reset password, bad username or password',
+                data['message'])
             self.assertIn('Failed', data['status'])
 
     def test_logout_success(self):
@@ -243,7 +258,7 @@ class TestAuth(BaseTestCase):
             self.assertEqual(response.status_code, 200)
             self.assertIn('Successfully logged out', data['message'])
             self.assertIn('Success', data['status'])
-    #@patch('time.sleep', return_value=None)
+
     def test_logout_expired_token(self):
         """Tests failure incase the auth_token has expired"""
         with self.client:

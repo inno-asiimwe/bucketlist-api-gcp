@@ -2,6 +2,7 @@
 from flask_testing import TestCase
 from app import db, create_app
 
+
 class BaseTestCase(TestCase):
     """Parent class for our test cases"""
 
@@ -16,6 +17,9 @@ class BaseTestCase(TestCase):
         db.session.commit()
 
     def tearDown(self):
-        """Method executed at the end of every test so as to clear the database for the next test"""
+        """
+        Method executed at the end of every test
+        so as to clear the database for the next test
+        """
         db.session.remove()
         db.drop_all()

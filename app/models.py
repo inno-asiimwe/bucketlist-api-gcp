@@ -4,6 +4,7 @@ from flask import current_app
 import jwt
 import datetime
 
+
 class User(db.Model):
     """Class to define the users table"""
     __tablename__ = 'users'
@@ -13,7 +14,10 @@ class User(db.Model):
     username = db.Column(db.String(256), nullable=False, unique=True)
     password = db.Column(db.String(256), nullable=False)
     email = db.Column(db.String(256), nullable=False, unique=True)
-    bucketlists = db.relationship('Bucketlist', backref='User', cascade='all, delete-orphan')
+    bucketlists = db.relationship(
+        'Bucketlist',
+        backref='User',
+        cascade='all, delete-orphan')
 
     def __init__(self, firstname, lastname, username, password, email):
         """Initialising the user"""
@@ -24,16 +28,17 @@ class User(db.Model):
         self.email = email
 
     def password_is_valid(self, password):
-        """Method validates password against its harsh"""
+        """Method validates password against its hash"""
         return Bcrypt().check_password_hash(self.password, password)
 
     def encode_auth_token(self, user_id):
         """Generates an authentication token"""
         try:
             payload = {
-                'exp':datetime.datetime.utcnow() + datetime.timedelta(seconds=current_app.config.get('TOKEN_TIME')),
-                'iat':datetime.datetime.utcnow(),
-                'sub':user_id
+                'exp': datetime.datetime.utcnow() + datetime.timedelta(
+                    seconds=current_app.config.get('TOKEN_TIME')),
+                'iat': datetime.datetime.utcnow(),
+                'sub': user_id
             }
             jwt_string = jwt.encode(
                 payload,
@@ -56,7 +61,7 @@ class User(db.Model):
 
     def __repr__(self):
         """ """
-        return '<User %r>' %(self.name)
+        return '<User %r>' % (self.name)
 
     @staticmethod
     def decode_auth_token(token):
@@ -75,6 +80,7 @@ class User(db.Model):
         except jwt.InvalidTokenError:
             return 'Invalid token'
 
+
 class Bucketlist(db.Model):
     """Class to define the bucketlists table"""
     __tablename__ = 'bucketlists'
@@ -82,7 +88,10 @@ class Bucketlist(db.Model):
     name = db.Column(db.String(256), nullable=False, unique=True)
     description = db.Column(db.Text)
     owner = db.Column(db.Integer, db.ForeignKey(User.id, ondelete='cascade'))
-    items = db.relationship('Item', backref='Bucketlist', cascade='all, delete-orphan')
+    items = db.relationship(
+        'Item',
+        backref='Bucketlist',
+        cascade='all, delete-orphan')
 
     def __init__(self, name, description, owner):
         """Initialising the bucketlist"""
@@ -103,7 +112,7 @@ class Bucketlist(db.Model):
     def to_json(self):
         """Method converts a bucketlist to a json object"""
         json_data = {
-            'id':self.id,
+            'id': self.id,
             'name': self.name,
             'description': self.description,
             'owner': self.owner,
@@ -118,7 +127,8 @@ class Bucketlist(db.Model):
 
     def __repr__(self):
         """A representation for an instance of a bucketlist"""
-        return '<Bucketlist: %r>' %(self.name)
+        return '<Bucketlist: %r>' % (self.name)
+
 
 class Item(db.Model):
     """Class to define the Items table"""
@@ -126,7 +136,9 @@ class Item(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(256), nullable=False, unique=True)
     description = db.Column(db.Text)
-    bucketlist_id = db.Column(db.Integer, db.ForeignKey(Bucketlist.id, ondelete='cascade'))
+    bucketlist_id = db.Column(
+        db.Integer,
+        db.ForeignKey(Bucketlist.id, ondelete='cascade'))
 
     def __init__(self, name, description, bucketlist_id):
         """Initialising an item"""
@@ -136,7 +148,7 @@ class Item(db.Model):
 
     def __repr__(self):
         """Method to represent an instance of the item"""
-        return '<Item: %r>' %(self.name)
+        return '<Item: %r>' % (self.name)
 
     def save(self):
         """Method to save item to database"""
@@ -162,6 +174,7 @@ class Item(db.Model):
     def get_all_items(bucketlist_id):
         """Method returns all items in a given bucketlist"""
         return Item.query.filter_by(bucketlist_id=bucketlist_id)
+
 
 class BlacklistToken(db.Model):
     """
@@ -192,4 +205,3 @@ class BlacklistToken(db.Model):
         if token:
             return True
         return False
-    

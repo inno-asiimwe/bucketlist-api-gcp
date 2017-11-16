@@ -195,7 +195,7 @@ def reset_password():
 
 @auth_blueprint.route('/logout', methods=['POST'])
 @auth_required
-def logout_user(resp, auth_token):
+def logout_user(user):
     """Log out a user
     ---
     tags:
@@ -212,7 +212,7 @@ def logout_user(resp, auth_token):
         401:
             description: "Failed"
     """
-    blacklist_token = BlacklistToken(token=auth_token)
+    blacklist_token = BlacklistToken(token=user['auth_token'])
     try:
         blacklist_token.save()
         response = {

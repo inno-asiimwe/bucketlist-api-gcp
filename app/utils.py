@@ -3,6 +3,7 @@ from functools import wraps
 from flask import request, jsonify, make_response
 from .models import User
 
+
 def auth_required(f):
     """decorator for authenticating a user using token based authentication """
     @wraps(f)
@@ -22,6 +23,6 @@ def auth_required(f):
             resp = User.decode_auth_token(auth_token)
         if not auth_token or isinstance(resp, str):
             return make_response(jsonify(response)), code
-        return f(resp, auth_token, *args, **kwargs)
+        user = {'user_id': resp, 'auth_token': auth_token}
+        return f(user, *args, **kwargs)
     return decorated_function
-

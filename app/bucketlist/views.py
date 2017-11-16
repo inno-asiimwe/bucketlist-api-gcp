@@ -7,7 +7,7 @@ from . import bucketlist_blueprint
 
 @bucketlist_blueprint.route('', methods=['POST'])
 @auth_required
-def create_bucketlist(resp, auth_token):
+def create_bucketlist(user):
     """create or retrieve bucketlist
     ---
     tags:
@@ -40,7 +40,7 @@ def create_bucketlist(resp, auth_token):
     if request.method == 'POST':
         name = request.data['name']
         description = request.data['description']
-        owner = resp
+        owner = user['user_id']
 
         try:
             new_bucketlist = Bucketlist(name, description, owner)
@@ -63,7 +63,7 @@ def create_bucketlist(resp, auth_token):
 
 @bucketlist_blueprint.route('', methods=['GET'])
 @auth_required
-def bucketlists(resp, auth_token):
+def bucketlists(user):
     """create or retrieve bucketlist
     ---
     tags:
@@ -98,23 +98,24 @@ def bucketlists(resp, auth_token):
 
     if limit:
         user_bucketlists = Bucketlist.query.filter_by(
-            owner=resp).limit(int(limit))
+            owner=user['user_id']).limit(int(limit))
         response = [bucketlist.to_json() for bucketlist in user_bucketlists]
         return make_response(jsonify(response)), 200
     elif q:
         user_bucketlists = Bucketlist.query.filter(
-            Bucketlist.name.ilike("%" + q + "%"), Bucketlist.owner == resp
+            Bucketlist.name.ilike("%" + q + "%"),
+            Bucketlist.owner == user['user_id']
         ).all()
         response = [bucketlist.to_json() for bucketlist in user_bucketlists]
         return make_response(jsonify(response)), 200
-    user_bucketlists = Bucketlist.get_all_bucketlists(resp)
+    user_bucketlists = Bucketlist.get_all_bucketlists(user['user_id'])
     response = [bucketlist.to_json() for bucketlist in user_bucketlists]
     return make_response(jsonify(response)), 200
 
 
 @bucketlist_blueprint.route('/<int:b_id>', methods=['GET'])
 @auth_required
-def get_bucketlist(resp, auth_token, b_id):
+def get_bucketlist(user, b_id):
     """ Retrieve bucketlist
     ---
     tags:
@@ -153,7 +154,7 @@ def get_bucketlist(resp, auth_token, b_id):
 
 @bucketlist_blueprint.route('/<int:b_id>', methods=['DELETE'])
 @auth_required
-def delete_bucketlist(resp, auth_token, b_id):
+def delete_bucketlist(user, b_id):
     """ Delete bucketlist
     ---
     tags:
@@ -189,7 +190,8 @@ def delete_bucketlist(resp, auth_token, b_id):
         my_bucketlist.delete()
         response = {
             'status': 'Success',
-            'bucketlist': my_bucketlist.id
+            'bucketlist': my_bucketlist.id,
+            'user': user['user_id']
         }
         return make_response(jsonify(response)), 200
     abort(404)
@@ -197,7 +199,7 @@ def delete_bucketlist(resp, auth_token, b_id):
 
 @bucketlist_blueprint.route('/<int:b_id>', methods=['PUT'])
 @auth_required
-def edit_bucketlist(resp, auth_token, b_id):
+def edit_bucketlist(user, b_id):
     """ Edit bucketlist
     ---
     tags:
@@ -234,7 +236,7 @@ def edit_bucketlist(resp, auth_token, b_id):
     if my_bucketlist:
         if my_bucketlist.name != name:
             duplicate = Bucketlist.query.filter_by(
-                name=name, owner=resp).first()
+                name=name, owner=user['user_id']).first()
             if not duplicate:
                 my_bucketlist.name = name
             else:
@@ -249,7 +251,7 @@ def edit_bucketlist(resp, auth_token, b_id):
 
 @bucketlist_blueprint.route('/<int:b_id>/items', methods=['POST'])
 @auth_required
-def create_bucketlist_item(resp, auth_token, b_id):
+def create_bucketlist_item(user, b_id):
     """Create a bucketlist item
     ---
     tags:
@@ -285,7 +287,9 @@ def create_bucketlist_item(resp, auth_token, b_id):
             description: "Failed, Duplicate Item"
     """
     if request.method == 'POST':
-        my_bucketlist = Bucketlist.query.filter_by(id=b_id, owner=resp).first()
+        my_bucketlist = Bucketlist.query.filter_by(id=b_id,
+                                                   owner=user['user_id']
+                                                   ).first()
         if my_bucketlist:
             item = Item.query.filter_by(
                 bucketlist_id=b_id, name=request.data['name']).first()
@@ -320,7 +324,7 @@ def create_bucketlist_item(resp, auth_token, b_id):
 
 @bucketlist_blueprint.route('/<int:b_id>/items/<int:i_id>', methods=['PUT'])
 @auth_required
-def edit_bucketlist_item(resp, auth_token, b_id, i_id):
+def edit_bucketlist_item(user, b_id, i_id):
     """"Edit and delete bucketlist item
     ---
     tags:
@@ -357,14 +361,16 @@ def edit_bucketlist_item(resp, auth_token, b_id, i_id):
     if not request_data:
         response = {
             'status': 'Failed',
-            'message': 'Invalid Payload'
+            'message': 'Invalid Payload',
+            'user': user['user_id']
         }
         return make_response(jsonify(response)), 400
     for key in keys:
         if key not in request_data:
             response = {
                 'status': 'Failed',
-                'message': 'Invalid Payload'
+                'message': 'Invalid Payload',
+                'user': user['user_id']
             }
             return make_response(jsonify(response)), 400
     my_item = Item.query.filter_by(bucketlist_id=b_id, id=i_id).first()
@@ -386,14 +392,15 @@ def edit_bucketlist_item(resp, auth_token, b_id, i_id):
             return make_response(jsonify(response)), 200
     response = {
         'status': 'Failed',
-        'message': 'Item not found'
+        'message': 'Item not found',
+        'user': user['user_id']
     }
     return make_response((jsonify(response))), 404
 
 
 @bucketlist_blueprint.route('/<int:b_id>/items/<int:i_id>', methods=['DELETE'])
 @auth_required
-def delete_bucketlist_item(resp, auth_token, b_id, i_id):
+def delete_bucketlist_item(user, b_id, i_id):
     """"Edit and delete bucketlist item
     ---
     tags:
@@ -432,11 +439,13 @@ def delete_bucketlist_item(resp, auth_token, b_id, i_id):
         if request.method == 'DELETE':
             my_item.delete()
             response = {
-                'status': 'Success'
+                'status': 'Success',
+                'user': user['user_id']
             }
             return make_response(jsonify(response)), 200
     response = {
         'status': 'Failed',
-        'message': 'Item not found'
+        'message': 'Item not found',
+        'user': user['user_id']
     }
     return make_response((jsonify(response))), 404

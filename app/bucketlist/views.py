@@ -155,7 +155,8 @@ def delete_bucketlist(resp, auth_token, b_id):
     if my_bucketlist:
         my_bucketlist.delete()
         response = {
-            'status': 'Success'
+            'status': 'Success',
+            'bucketlist': my_bucketlist.id
         }
         return make_response(jsonify(response)), 200
     abort(404)

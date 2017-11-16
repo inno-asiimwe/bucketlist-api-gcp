@@ -8,7 +8,7 @@ from . import bucketlist_blueprint
 @bucketlist_blueprint.route('', methods=['POST'])
 @auth_required
 def create_bucketlist(user):
-    """create or retrieve bucketlist
+    """create bucketlist
     ---
     tags:
      - "bucketlists"
@@ -63,8 +63,8 @@ def create_bucketlist(user):
 
 @bucketlist_blueprint.route('', methods=['GET'])
 @auth_required
-def bucketlists(user):
-    """create or retrieve bucketlist
+def get_bucketlists(user):
+    """Retrieve bucketlists
     ---
     tags:
      - "bucketlists"
@@ -149,7 +149,12 @@ def get_bucketlist(user, b_id):
     if my_bucketlist:
         response = my_bucketlist.to_json()
         return make_response(jsonify(response)), 200
-    abort(404)
+    response = {
+        'status': 'Failed',
+        'message': 'Bucketlist not Found',
+        'user': user['user_id']
+    }
+    return make_response(jsonify(response)), 404
 
 
 @bucketlist_blueprint.route('/<int:b_id>', methods=['DELETE'])
@@ -194,7 +199,12 @@ def delete_bucketlist(user, b_id):
             'user': user['user_id']
         }
         return make_response(jsonify(response)), 200
-    abort(404)
+    response = {
+        'status': 'Failed',
+        'message': 'Bucketlist not found',
+        'user': user['user_id']
+    }
+    return make_response(jsonify(response)), 404
 
 
 @bucketlist_blueprint.route('/<int:b_id>', methods=['PUT'])
@@ -246,7 +256,12 @@ def edit_bucketlist(user, b_id):
         my_bucketlist.save()
         response = my_bucketlist.to_json()
         return make_response(jsonify(response)), 200
-    abort(404)
+    response = {
+        'status': 'Failed',
+        'message': 'Bucketlist not found',
+        'user': user['user_id']
+    }
+    return make_response(jsonify(response)), 404
 
 
 @bucketlist_blueprint.route('/<int:b_id>/items', methods=['POST'])
@@ -319,7 +334,12 @@ def create_bucketlist_item(user, b_id):
                 'message': 'Item already exists'
             }
             return make_response(jsonify(response)), 409
-        abort(404)
+        response = {
+            'status': 'Failed',
+            'message': 'Bucketlist not found',
+            'user': user['user_id']
+        }
+        return make_response(jsonify(response)), 404
 
 
 @bucketlist_blueprint.route('/<int:b_id>/items/<int:i_id>', methods=['PUT'])

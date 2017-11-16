@@ -5,9 +5,9 @@ from app.models import Bucketlist, Item
 from . import bucketlist_blueprint
 
 
-@bucketlist_blueprint.route('', methods=['POST', 'GET'])
+@bucketlist_blueprint.route('', methods=['POST'])
 @auth_required
-def bucketlists(resp, auth_token):
+def create_bucketlist(resp, auth_token):
     """create or retrieve bucketlist
     ---
     tags:
@@ -36,11 +36,7 @@ def bucketlists(resp, auth_token):
             description: "Failed"
         201:
             description: "Success"
-        200:
-            description: "success"
      """
-    q = request.args.get('q')
-    limit = request.args.get('limit')
     if request.method == 'POST':
         name = request.data['name']
         description = request.data['description']
@@ -63,7 +59,44 @@ def bucketlists(resp, auth_token):
                 'message': str(e)
             }
             return make_response(jsonify(response)), 400
-    elif limit:
+
+
+@bucketlist_blueprint.route('', methods=['GET'])
+@auth_required
+def bucketlists(resp, auth_token):
+    """create or retrieve bucketlist
+    ---
+    tags:
+     - "bucketlists"
+    parameters:
+      - in: "header"
+        name: "Authorization"
+        description: "Token of logged in user"
+        required: true
+        type: string
+      - in: "body"
+        name: "body"
+        description: "Name and description of bucketlist"
+        schema:
+         type: "object"
+         required:
+          - name
+          - description
+         properties:
+          name:
+           type: "string"
+          description:
+           type: "string"
+    responses:
+        400:
+            description: "Failed"
+        200:
+            description: "success"
+     """
+    q = request.args.get('q')
+    limit = request.args.get('limit')
+
+    if limit:
         user_bucketlists = Bucketlist.query.filter_by(
             owner=resp).limit(int(limit))
         response = [bucketlist.to_json() for bucketlist in user_bucketlists]

@@ -28,27 +28,17 @@ def auth_required(func):
     return decorated_function
 
 
-def validate_login_data(func):
-    """Decorator for validating login data"""
-    @wraps(func)
-    def validate_login(*args, **kwargs):
-        """Decorated function for validating login data"""
-        user_data = request.data
-        if not user_data or 'username' not in user_data \
-                or 'password' not in user_data:
-            return make_response(jsonify({'message': 'Invalid payload'})), 400
-        return func(*args, **kwargs)
-    return validate_login
-
-
-def check_bucketlist_item_data(func):
-    """Decorator for validating bucketlist/item data"""
-    @wraps(func)
-    def validate_bucketlist_item_data(*args, **kwargs):
-        """Decorated function for validating bucketlist/item data"""
-        bucketlist_data = request.data
-        if not bucketlist_data or 'description' not in bucketlist_data \
-                or 'name' not in bucketlist_data:
-            return make_response(jsonify({'message': 'Invalid payload'})), 400
-        return func(*args, **kwargs)
-    return validate_bucketlist_item_data
+def validate_fields(field1, field2):
+    """Passing arguments to decorator"""
+    def check_data(func):
+        """Decorator for validating fields in the request"""
+        @wraps(func)
+        def validate_input_data(*args, **kwargs):
+            """Decorated function for validating bucketlist/item data"""
+            data = request.data
+            if not data or field1 not in data \
+                    or field2 not in data:
+                return make_response(jsonify({'message': 'Invalid payload'})), 400
+            return func(*args, **kwargs)
+        return validate_input_data
+    return check_data

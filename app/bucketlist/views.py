@@ -1,14 +1,14 @@
 """views for bucketlist_blueprint """
 import datetime
 from flask import make_response, jsonify, request
-from app.utils import auth_required, check_bucketlist_item_data
+from app.utils import auth_required, validate_fields
 from app.models import Bucketlist, Item
 from . import bucketlist_blueprint
 
 
 @bucketlist_blueprint.route('', methods=['POST'])
 @auth_required
-@check_bucketlist_item_data
+@validate_fields('name', 'description')
 def create_bucketlist(user):
     """create bucketlist
     ---
@@ -221,7 +221,7 @@ def delete_bucketlist(user, b_id):
 
 @bucketlist_blueprint.route('/<int:b_id>', methods=['PUT'])
 @auth_required
-@check_bucketlist_item_data
+@validate_fields('name', 'description')
 def edit_bucketlist(user, b_id):
     """ Edit bucketlist
     ---
@@ -280,7 +280,7 @@ def edit_bucketlist(user, b_id):
 
 @bucketlist_blueprint.route('/<int:b_id>/items', methods=['POST'])
 @auth_required
-@check_bucketlist_item_data
+@validate_fields('name', 'description')
 def create_bucketlist_item(user, b_id):
     """Create a bucketlist item
     ---
@@ -358,7 +358,7 @@ def create_bucketlist_item(user, b_id):
 
 @bucketlist_blueprint.route('/<int:b_id>/items/<int:i_id>', methods=['PUT'])
 @auth_required
-@check_bucketlist_item_data
+@validate_fields('name', 'description')
 def edit_bucketlist_item(user, b_id, i_id):
     """"Edit and delete bucketlist item
     ---

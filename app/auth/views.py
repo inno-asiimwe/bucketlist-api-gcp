@@ -2,7 +2,7 @@
 from flask import make_response, jsonify, request
 from flask_bcrypt import Bcrypt
 from app.models import User, BlacklistToken
-from app.utils import auth_required, validate_login_data
+from app.utils import auth_required, validate_fields
 from . import auth_blueprint
 
 
@@ -96,7 +96,7 @@ def register_user():
 
 
 @auth_blueprint.route('/login', methods=['POST'])
-@validate_login_data
+@validate_fields("username", "password")
 def login_user():
     """Loging in a user
     ---

@@ -1,13 +1,14 @@
 """views for bucketlist_blueprint """
 import datetime
 from flask import make_response, jsonify, request
-from app.utils import auth_required
+from app.utils import auth_required, validate_bucketlist_data
 from app.models import Bucketlist, Item
 from . import bucketlist_blueprint
 
 
 @bucketlist_blueprint.route('', methods=['POST'])
 @auth_required
+@validate_bucketlist_data
 def create_bucketlist(user):
     """create bucketlist
     ---
@@ -45,13 +46,7 @@ def create_bucketlist(user):
     try:
         new_bucketlist = Bucketlist(name, description, owner)
         new_bucketlist.save()
-        response = {
-            'status': 'Success',
-            'id': new_bucketlist.id,
-            'name': new_bucketlist.name,
-            'description': new_bucketlist.description,
-            'owner': new_bucketlist.owner
-        }
+        response = new_bucketlist.to_json()
         return make_response(jsonify(response)), 201
     except Exception as e:
         response = {
@@ -226,6 +221,7 @@ def delete_bucketlist(user, b_id):
 
 @bucketlist_blueprint.route('/<int:b_id>', methods=['PUT'])
 @auth_required
+@validate_bucketlist_data
 def edit_bucketlist(user, b_id):
     """ Edit bucketlist
     ---
@@ -284,6 +280,7 @@ def edit_bucketlist(user, b_id):
 
 @bucketlist_blueprint.route('/<int:b_id>/items', methods=['POST'])
 @auth_required
+@validate_bucketlist_data
 def create_bucketlist_item(user, b_id):
     """Create a bucketlist item
     ---
@@ -361,6 +358,7 @@ def create_bucketlist_item(user, b_id):
 
 @bucketlist_blueprint.route('/<int:b_id>/items/<int:i_id>', methods=['PUT'])
 @auth_required
+@validate_bucketlist_data
 def edit_bucketlist_item(user, b_id, i_id):
     """"Edit and delete bucketlist item
     ---
@@ -394,22 +392,6 @@ def edit_bucketlist_item(user, b_id, i_id):
             description: "Duplicate name"
     """
     request_data = request.data
-    keys = ['name', 'description']
-    if not request_data:
-        response = {
-            'status': 'Failed',
-            'message': 'Invalid Payload',
-            'user': user['user_id']
-        }
-        return make_response(jsonify(response)), 400
-    for key in keys:
-        if key not in request_data:
-            response = {
-                'status': 'Failed',
-                'message': 'Invalid Payload',
-                'user': user['user_id']
-            }
-            return make_response(jsonify(response)), 400
     my_item = Item.query.filter_by(bucketlist_id=b_id, id=i_id).first()
     name = request_data['name']
     description = request_data['description']

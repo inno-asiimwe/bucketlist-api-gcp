@@ -36,6 +36,19 @@ def validate_login_data(func):
         user_data = request.data
         if not user_data or 'username' not in user_data \
                 or 'password' not in user_data:
-            return make_response(jsonify({'message': 'Bad request'})), 400
+            return make_response(jsonify({'message': 'Invalid payload'})), 400
+        return func(*args, **kwargs)
+    return decorated_function
+
+
+def validate_bucketlist_data(func):
+    """Decorator for validating login data"""
+    @wraps(func)
+    def decorated_function(*args, **kwargs):
+        """Decorated function for validating login data"""
+        bucketlist_data = request.data
+        if not bucketlist_data or 'description' not in bucketlist_data \
+                or 'name' not in bucketlist_data:
+            return make_response(jsonify({'message': 'Invalid payload'})), 400
         return func(*args, **kwargs)
     return decorated_function

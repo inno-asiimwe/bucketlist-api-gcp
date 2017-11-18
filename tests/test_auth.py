@@ -30,6 +30,28 @@ class TestAuth(BaseTestCase):
             self.assertIn('Successfully registered!', data['message'])
             self.assertIn('Success', data['status'])
 
+    def test_register_invalid_payload(self):
+        """
+        Tests user registration with invalid payload,
+        status code should be 400,
+        with a Failed message
+        """
+        with self.client:
+            response = self.client.post(
+                '/v1/auth/register',
+                data=json.dumps(dict(
+                    firstname='Innocent',
+                    lastname='Asiimwe',
+                    username='inno',
+                    email='asiimwe@outlook.com'
+                    )),
+                content_type='application/json',
+                )
+            data = json.loads(response.data.decode())
+            self.assertEqual(response.status_code, 400)
+            self.assertIn('Invalid Payload', data['message'])
+            self.assertIn('Failed', data['status'])
+
     def test_register_duplicate(self):
         """Tests registration of a duplicate username, """
         with self.client:
@@ -90,6 +112,32 @@ class TestAuth(BaseTestCase):
         self.assertIn('Succesfully logged in', data['message'])
         self.assertIn('Success', data['status'])
         self.assertTrue(data['auth_token'])
+
+    def test_login_invalid_payload(self):
+        """Tests a successful login"""
+        with self.client:
+            res = self.client.post(
+                '/v1/auth/register',
+                data=json.dumps(dict(
+                    firstname='Innocent',
+                    lastname='Asiimwe',
+                    username='inno',
+                    password='pass',
+                    email='asiimwe@outlook.com'
+                )),
+                content_type='application/json'
+            )
+        self.assertEqual(res.status_code, 201)
+        response = self.client.post(
+            '/v1/auth/login',
+            data=json.dumps(dict(
+                username='inno'
+            )),
+            content_type='application/json'
+        )
+        data = json.loads(response.data.decode())
+        self.assertEqual(response.status_code, 400)
+        self.assertIn('Invalid payload', data['message'])
 
     def test_login_unregistered(self):
         """Tests an unregistered user cannot login"""

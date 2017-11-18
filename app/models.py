@@ -1,3 +1,4 @@
+"""Module for all the models for the bucketlist app"""
 from app import db
 from flask_bcrypt import Bcrypt
 from flask import current_app

@@ -1,5 +1,5 @@
 """views for bucketlist_blueprint """
-from flask import make_response, jsonify, request, abort
+from flask import make_response, jsonify, request
 from app.utils import auth_required
 from app.models import Bucketlist, Item
 from . import bucketlist_blueprint

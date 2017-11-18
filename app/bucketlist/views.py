@@ -1,14 +1,14 @@
 """views for bucketlist_blueprint """
 import datetime
 from flask import make_response, jsonify, request
-from app.utils import auth_required, validate_bucketlist_data
+from app.utils import auth_required, check_bucketlist_item_data
 from app.models import Bucketlist, Item
 from . import bucketlist_blueprint
 
 
 @bucketlist_blueprint.route('', methods=['POST'])
 @auth_required
-@validate_bucketlist_data
+@check_bucketlist_item_data
 def create_bucketlist(user):
     """create bucketlist
     ---
@@ -91,12 +91,13 @@ def get_bucketlists(user):
     query = request.args.get('q')
     limit = request.args.get('limit')
     page = request.args.get('page')
+    search_query = Bucketlist.query.filter(
+        Bucketlist.name.ilike("%" + query + "%"),
+        Bucketlist.owner == user['user_id']
+        )
 
     if query and limit and page:
-        user_bucketlists = Bucketlist.query.filter(
-            Bucketlist.name.ilike("%" + query + "%"),
-            Bucketlist.owner == user['user_id']
-        ).paginate(int(page), int(limit), False)
+        user_bucketlists = search_query.paginate(int(page), int(limit), False)
         response = [
             bucketlist.to_json() for bucketlist in user_bucketlists.items
             ]
@@ -114,10 +115,7 @@ def get_bucketlists(user):
         response = [bucketlist.to_json() for bucketlist in user_bucketlists]
         return make_response(jsonify(response)), 200
     if query:
-        user_bucketlists = Bucketlist.query.filter(
-            Bucketlist.name.ilike("%" + query + "%"),
-            Bucketlist.owner == user['user_id']
-        ).all()
+        user_bucketlists = search_query.all()
         response = [bucketlist.to_json() for bucketlist in user_bucketlists]
         return make_response(jsonify(response)), 200
     user_bucketlists = Bucketlist.get_all_bucketlists(user['user_id'])
@@ -221,7 +219,7 @@ def delete_bucketlist(user, b_id):
 
 @bucketlist_blueprint.route('/<int:b_id>', methods=['PUT'])
 @auth_required
-@validate_bucketlist_data
+@check_bucketlist_item_data
 def edit_bucketlist(user, b_id):
     """ Edit bucketlist
     ---
@@ -280,7 +278,7 @@ def edit_bucketlist(user, b_id):
 
 @bucketlist_blueprint.route('/<int:b_id>/items', methods=['POST'])
 @auth_required
-@validate_bucketlist_data
+@check_bucketlist_item_data
 def create_bucketlist_item(user, b_id):
     """Create a bucketlist item
     ---
@@ -358,7 +356,7 @@ def create_bucketlist_item(user, b_id):
 
 @bucketlist_blueprint.route('/<int:b_id>/items/<int:i_id>', methods=['PUT'])
 @auth_required
-@validate_bucketlist_data
+@check_bucketlist_item_data
 def edit_bucketlist_item(user, b_id, i_id):
     """"Edit and delete bucketlist item
     ---

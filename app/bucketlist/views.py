@@ -94,13 +94,30 @@ def get_bucketlists(user):
      """
     query = request.args.get('q')
     limit = request.args.get('limit')
+    page = request.args.get('page')
 
+    if query and limit and page:
+        user_bucketlists = Bucketlist.query.filter(
+            Bucketlist.name.ilike("%" + query + "%"),
+            Bucketlist.owner == user['user_id']
+        ).paginate(int(page), int(limit), False)
+        response = [
+            bucketlist.to_json() for bucketlist in user_bucketlists.items
+            ]
+        return make_response(jsonify(response)), 200
+    if limit and page:
+        user_bucketlists = Bucketlist.query.filter_by(
+            owner=user['user_id']).paginate(int(page), int(limit), False)
+        response = [
+            bucketlist.to_json() for bucketlist in user_bucketlists.items
+            ]
+        return make_response(jsonify(response)), 200
     if limit:
         user_bucketlists = Bucketlist.query.filter_by(
             owner=user['user_id']).limit(int(limit))
         response = [bucketlist.to_json() for bucketlist in user_bucketlists]
         return make_response(jsonify(response)), 200
-    elif query:
+    if query:
         user_bucketlists = Bucketlist.query.filter(
             Bucketlist.name.ilike("%" + query + "%"),
             Bucketlist.owner == user['user_id']
@@ -313,10 +330,10 @@ def create_bucketlist_item(user, b_id):
                     description=request.data['description'],
                     bucketlist_id=b_id)
                 new_item.save()
-            except Exception as e:
+            except Exception as error:
                 response = {
                     'status': 'Failed',
-                    'message': str(e)
+                    'message': str(error)
                 }
                 return make_response(jsonify(response)), 400
             response = {

@@ -396,19 +396,18 @@ def edit_bucketlist_item(user, b_id, i_id):
     name = request_data['name']
     description = request_data['description']
     if my_item:
-        if request.method == 'PUT':
-            if name and (my_item.name != name):
-                duplicate = Item.query.filter_by(
-                    name=request.data['name'], bucketlist_id=b_id).first()
-                if not duplicate:
-                    my_item.name = request.data['name']
-                else:
-                    return make_response(jsonify({'status': 'Failed'})), 409
-            if my_item.description != description:
-                my_item.description = request.data['description']
-            my_item.save()
-            response = my_item.to_json()
-            return make_response(jsonify(response)), 200
+        if name and (my_item.name != name):
+            duplicate = Item.query.filter_by(
+                name=request.data['name'], bucketlist_id=b_id).first()
+            if not duplicate:
+                my_item.name = request.data['name']
+            else:
+                return make_response(jsonify({'status': 'Failed'})), 409
+        if my_item.description != description:
+            my_item.description = request.data['description']
+        my_item.save()
+        response = my_item.to_json()
+        return make_response(jsonify(response)), 200
     response = {
         'status': 'Failed',
         'message': 'Item not found',

@@ -823,4 +823,3 @@ class TestBucketlist(BaseTestCase):
             self.assertEqual(res_bucketlist3.status_code, 201)
             self.assertEqual(response.status_code, 200)
             self.assertEqual(2, len(data))
-

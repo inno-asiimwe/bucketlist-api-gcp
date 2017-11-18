@@ -1,3 +1,4 @@
+"""Module for all the models for the bucketlist app"""
 from app import db
 from flask_bcrypt import Bcrypt
 from flask import current_app
@@ -87,6 +88,8 @@ class Bucketlist(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(256), nullable=False, unique=True)
     description = db.Column(db.Text)
+    date_created = db.Column(db.DateTime, default=datetime.datetime.utcnow())
+    date_modified = db.Column(db.DateTime)
     owner = db.Column(db.Integer, db.ForeignKey(User.id, ondelete='cascade'))
     items = db.relationship(
         'Item',
@@ -116,6 +119,8 @@ class Bucketlist(db.Model):
             'name': self.name,
             'description': self.description,
             'owner': self.owner,
+            'date_created': self.date_created,
+            'date_modified': self.date_modified,
             'items': [item.to_json() for item in self.items]
         }
         return json_data

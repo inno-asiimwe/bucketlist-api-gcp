@@ -15,7 +15,7 @@ class TestAuth(BaseTestCase):
         """
         with self.client:
             response = self.client.post(
-                '/auth/register',
+                '/v1/auth/register',
                 data=json.dumps(dict(
                     firstname='Innocent',
                     lastname='Asiimwe',
@@ -30,11 +30,33 @@ class TestAuth(BaseTestCase):
             self.assertIn('Successfully registered!', data['message'])
             self.assertIn('Success', data['status'])
 
+    def test_register_invalid_payload(self):
+        """
+        Tests user registration with invalid payload,
+        status code should be 400,
+        with a Failed message
+        """
+        with self.client:
+            response = self.client.post(
+                '/v1/auth/register',
+                data=json.dumps(dict(
+                    firstname='Innocent',
+                    lastname='Asiimwe',
+                    username='inno',
+                    email='asiimwe@outlook.com'
+                    )),
+                content_type='application/json',
+                )
+            data = json.loads(response.data.decode())
+            self.assertEqual(response.status_code, 400)
+            self.assertIn('Invalid Payload', data['message'])
+            self.assertIn('Failed', data['status'])
+
     def test_register_duplicate(self):
         """Tests registration of a duplicate username, """
         with self.client:
             self.client.post(
-                '/auth/register',
+                '/v1/auth/register',
                 data=json.dumps(dict(
                     firstname='Innocent',
                     lastname='Asiimwe',
@@ -45,7 +67,7 @@ class TestAuth(BaseTestCase):
                 content_type='application/json'
                 )
             response = self.client.post(
-                '/auth/register',
+                '/v1/auth/register',
                 data=json.dumps(dict(
                     firstname='Jane',
                     lastname='Basemera',
@@ -66,7 +88,7 @@ class TestAuth(BaseTestCase):
         """Tests a successful login"""
         with self.client:
             res = self.client.post(
-                '/auth/register',
+                '/v1/auth/register',
                 data=json.dumps(dict(
                     firstname='Innocent',
                     lastname='Asiimwe',
@@ -78,7 +100,7 @@ class TestAuth(BaseTestCase):
             )
         self.assertEqual(res.status_code, 201)
         response = self.client.post(
-            '/auth/login',
+            '/v1/auth/login',
             data=json.dumps(dict(
                 username='inno',
                 password='pass'
@@ -91,11 +113,37 @@ class TestAuth(BaseTestCase):
         self.assertIn('Success', data['status'])
         self.assertTrue(data['auth_token'])
 
+    def test_login_invalid_payload(self):
+        """Tests a successful login"""
+        with self.client:
+            res = self.client.post(
+                '/v1/auth/register',
+                data=json.dumps(dict(
+                    firstname='Innocent',
+                    lastname='Asiimwe',
+                    username='inno',
+                    password='pass',
+                    email='asiimwe@outlook.com'
+                )),
+                content_type='application/json'
+            )
+        self.assertEqual(res.status_code, 201)
+        response = self.client.post(
+            '/v1/auth/login',
+            data=json.dumps(dict(
+                username='inno'
+            )),
+            content_type='application/json'
+        )
+        data = json.loads(response.data.decode())
+        self.assertEqual(response.status_code, 400)
+        self.assertIn('Invalid payload', data['message'])
+
     def test_login_unregistered(self):
         """Tests an unregistered user cannot login"""
         with self.client:
             response = self.client.post(
-                '/auth/login',
+                '/v1/auth/login',
                 data=json.dumps(dict(
                     username='unknown',
                     password='unknown'
@@ -113,7 +161,7 @@ class TestAuth(BaseTestCase):
         """Tests user cannot login in with wrong password"""
         with self.client:
             res = self.client.post(
-                '/auth/register',
+                '/v1/auth/register',
                 data=json.dumps(dict(
                     firstname='Innocent',
                     lastname='Asiimwe',
@@ -125,7 +173,7 @@ class TestAuth(BaseTestCase):
             )
             self.assertEqual(res.status_code, 201)
             response = self.client.post(
-                '/auth/login',
+                '/v1/auth/login',
                 data=json.dumps(dict(
                     username='inno',
                     password='wrongpass'
@@ -143,7 +191,7 @@ class TestAuth(BaseTestCase):
         """Tests a successful reset of the password"""
         with self.client:
             res_register = self.client.post(
-                '/auth/register',
+                '/v1/auth/register',
                 data=json.dumps(dict(
                     firstname='Innocent',
                     lastname='Asiimwe',
@@ -154,7 +202,7 @@ class TestAuth(BaseTestCase):
                 content_type='application/json'
             )
             response = self.client.post(
-                '/auth/reset-password',
+                '/v1/auth/reset-password',
                 data=json.dumps(dict(
                     username='inno',
                     old_password='pass',
@@ -172,7 +220,7 @@ class TestAuth(BaseTestCase):
         """Tests failure in case of unregistered user"""
         with self.client:
             response = self.client.post(
-                '/auth/reset-password',
+                '/v1/auth/reset-password',
                 data=json.dumps(dict(
                     username='inno',
                     old_password='pass',
@@ -191,7 +239,7 @@ class TestAuth(BaseTestCase):
         """Tests failure incase of wrong password"""
         with self.client:
             res_register = self.client.post(
-                '/auth/register',
+                '/v1/auth/register',
                 data=json.dumps(dict(
                     firstname='inno',
                     lastname='asiimwe',
@@ -203,7 +251,7 @@ class TestAuth(BaseTestCase):
             )
 
             response = self.client.post(
-                '/auth/reset-password',
+                '/v1/auth/reset-password',
                 data=json.dumps(dict(
                     username='inno',
                     old_password='password',
@@ -224,7 +272,7 @@ class TestAuth(BaseTestCase):
         """Tests a logged in user can successfully"""
         with self.client:
             res_register = self.client.post(
-                '/auth/register',
+                '/v1/auth/register',
                 data=json.dumps(dict(
                     firstname='inno',
                     lastname='asiimwe',
@@ -236,7 +284,7 @@ class TestAuth(BaseTestCase):
             )
 
             res_login = self.client.post(
-                '/auth/login',
+                '/v1/auth/login',
                 data=json.dumps(dict(
                     username='inno',
                     password='pass'
@@ -245,7 +293,7 @@ class TestAuth(BaseTestCase):
             )
 
             response = self.client.post(
-                '/auth/logout',
+                '/v1/auth/logout',
                 headers=dict(
                     Authorization='Bearer '+json.loads(
                         res_login.data.decode()
@@ -263,7 +311,7 @@ class TestAuth(BaseTestCase):
         """Tests failure incase the auth_token has expired"""
         with self.client:
             res_register = self.client.post(
-                '/auth/register',
+                '/v1/auth/register',
                 data=json.dumps(dict(
                     firstname='inno',
                     lastname='asiimwe',
@@ -275,7 +323,7 @@ class TestAuth(BaseTestCase):
             )
 
             res_login = self.client.post(
-                '/auth/login',
+                '/v1/auth/login',
                 data=json.dumps(dict(
                     username='inno',
                     password='pass'
@@ -286,7 +334,7 @@ class TestAuth(BaseTestCase):
             time.sleep(6)
 
             response = self.client.post(
-                '/auth/logout',
+                '/v1/auth/logout',
                 headers=dict(
                     Authorization='Bearer '+json.loads(
                         res_login.data.decode()

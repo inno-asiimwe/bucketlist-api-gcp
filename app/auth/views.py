@@ -2,7 +2,7 @@
 from flask import make_response, jsonify, request
 from flask_bcrypt import Bcrypt
 from app.models import User, BlacklistToken
-from app.utils import auth_required
+from app.utils import auth_required, validate_fields
 from . import auth_blueprint
 
 
@@ -96,6 +96,7 @@ def register_user():
 
 
 @auth_blueprint.route('/login', methods=['POST'])
+@validate_fields("username", "password")
 def login_user():
     """Loging in a user
     ---
@@ -123,6 +124,7 @@ def login_user():
             description: "Failed to login"
 
     """
+
     user = User.query.filter_by(username=request.data['username']).first()
 
     if user and user.password_is_valid(request.data['password']):
@@ -195,7 +197,7 @@ def reset_password():
 
 @auth_blueprint.route('/logout', methods=['POST'])
 @auth_required
-def logout_user(resp, auth_token):
+def logout_user(user):
     """Log out a user
     ---
     tags:
@@ -212,7 +214,7 @@ def logout_user(resp, auth_token):
         401:
             description: "Failed"
     """
-    blacklist_token = BlacklistToken(token=auth_token)
+    blacklist_token = BlacklistToken(token=user['auth_token'])
     try:
         blacklist_token.save()
         response = {
@@ -220,9 +222,9 @@ def logout_user(resp, auth_token):
             'status': "Success"
         }
         return make_response(jsonify(response)), 200
-    except Exception as e:
+    except Exception as error:
         response = {
-            "message": e,
+            "message": error,
             "status": "Failed"
         }
         return make_response(jsonify(response)), 401

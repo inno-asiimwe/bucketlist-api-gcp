@@ -4,9 +4,9 @@ from flask import request, jsonify, make_response
 from .models import User
 
 
-def auth_required(f):
+def auth_required(func):
     """decorator for authenticating a user using token based authentication """
-    @wraps(f)
+    @wraps(func)
     def decorated_function(*args, **kwargs):
         """ Decorated function for authenticating a user"""
         response = {
@@ -24,5 +24,18 @@ def auth_required(f):
         if not auth_token or isinstance(resp, str):
             return make_response(jsonify(response)), code
         user = {'user_id': resp, 'auth_token': auth_token}
-        return f(user, *args, **kwargs)
+        return func(user, *args, **kwargs)
+    return decorated_function
+
+
+def validate_login_data(func):
+    """Decorator for validating login data"""
+    @wraps(func)
+    def decorated_function(*args, **kwargs):
+        """Decorated function for validating login data"""
+        user_data = request.data
+        if not user_data or 'username' not in user_data \
+                or 'password' not in user_data:
+            return make_response(jsonify({'message': 'Bad request'})), 400
+        return func(*args, **kwargs)
     return decorated_function

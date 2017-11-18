@@ -92,7 +92,7 @@ def get_bucketlists(user):
         200:
             description: "success"
      """
-    q = request.args.get('q')
+    query = request.args.get('q')
     limit = request.args.get('limit')
 
     if limit:
@@ -100,9 +100,9 @@ def get_bucketlists(user):
             owner=user['user_id']).limit(int(limit))
         response = [bucketlist.to_json() for bucketlist in user_bucketlists]
         return make_response(jsonify(response)), 200
-    elif q:
+    elif query:
         user_bucketlists = Bucketlist.query.filter(
-            Bucketlist.name.ilike("%" + q + "%"),
+            Bucketlist.name.ilike("%" + query + "%"),
             Bucketlist.owner == user['user_id']
         ).all()
         response = [bucketlist.to_json() for bucketlist in user_bucketlists]
@@ -300,45 +300,44 @@ def create_bucketlist_item(user, b_id):
         409:
             description: "Failed, Duplicate Item"
     """
-    if request.method == 'POST':
-        my_bucketlist = Bucketlist.query.filter_by(id=b_id,
-                                                   owner=user['user_id']
-                                                   ).first()
-        if my_bucketlist:
-            item = Item.query.filter_by(
-                bucketlist_id=b_id, name=request.data['name']).first()
-            if not item:
-                try:
-                    new_item = Item(
-                        name=request.data['name'],
-                        description=request.data['description'],
-                        bucketlist_id=b_id)
-                    new_item.save()
-                except Exception as e:
-                    response = {
-                        'status': 'Failed',
-                        'message': str(e)
-                    }
-                    return make_response(jsonify(response)), 400
+    my_bucketlist = Bucketlist.query.filter_by(id=b_id,
+                                               owner=user['user_id']
+                                               ).first()
+    if my_bucketlist:
+        item = Item.query.filter_by(
+            bucketlist_id=b_id, name=request.data['name']).first()
+        if not item:
+            try:
+                new_item = Item(
+                    name=request.data['name'],
+                    description=request.data['description'],
+                    bucketlist_id=b_id)
+                new_item.save()
+            except Exception as e:
                 response = {
-                    'status': 'Success',
-                    'id': new_item.id,
-                    'name': new_item.name,
-                    'description': new_item.description,
-                    'bucketlist_id': new_item.bucketlist_id
+                    'status': 'Failed',
+                    'message': str(e)
                 }
-                return make_response(jsonify(response)), 201
+                return make_response(jsonify(response)), 400
             response = {
-                'status': 'Failed',
-                'message': 'Item already exists'
+                'status': 'Success',
+                'id': new_item.id,
+                'name': new_item.name,
+                'description': new_item.description,
+                'bucketlist_id': new_item.bucketlist_id
             }
-            return make_response(jsonify(response)), 409
+            return make_response(jsonify(response)), 201
         response = {
             'status': 'Failed',
-            'message': 'Bucketlist not found',
-            'user': user['user_id']
+            'message': 'Item already exists'
         }
-        return make_response(jsonify(response)), 404
+        return make_response(jsonify(response)), 409
+    response = {
+        'status': 'Failed',
+        'message': 'Bucketlist not found',
+        'user': user['user_id']
+    }
+    return make_response(jsonify(response)), 404
 
 
 @bucketlist_blueprint.route('/<int:b_id>/items/<int:i_id>', methods=['PUT'])

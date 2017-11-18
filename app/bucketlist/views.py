@@ -37,28 +37,27 @@ def create_bucketlist(user):
         201:
             description: "Success"
      """
-    if request.method == 'POST':
-        name = request.data['name']
-        description = request.data['description']
-        owner = user['user_id']
+    name = request.data['name']
+    description = request.data['description']
+    owner = user['user_id']
 
-        try:
-            new_bucketlist = Bucketlist(name, description, owner)
-            new_bucketlist.save()
-            response = {
-                'status': 'Success',
-                'id': new_bucketlist.id,
-                'name': new_bucketlist.name,
-                'description': new_bucketlist.description,
-                'owner': new_bucketlist.owner
-            }
-            return make_response(jsonify(response)), 201
-        except Exception as e:
-            response = {
-                'status': 'Failed',
-                'message': str(e)
-            }
-            return make_response(jsonify(response)), 400
+    try:
+        new_bucketlist = Bucketlist(name, description, owner)
+        new_bucketlist.save()
+        response = {
+            'status': 'Success',
+            'id': new_bucketlist.id,
+            'name': new_bucketlist.name,
+            'description': new_bucketlist.description,
+            'owner': new_bucketlist.owner
+        }
+        return make_response(jsonify(response)), 201
+    except Exception as e:
+        response = {
+            'status': 'Failed',
+            'message': str(e)
+        }
+        return make_response(jsonify(response)), 400
 
 
 @bucketlist_blueprint.route('', methods=['GET'])

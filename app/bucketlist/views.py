@@ -1,4 +1,5 @@
 """views for bucketlist_blueprint """
+import datetime
 from flask import make_response, jsonify, request
 from app.utils import auth_required
 from app.models import Bucketlist, Item
@@ -269,6 +270,7 @@ def edit_bucketlist(user, b_id):
                 return make_response(jsonify({'status': 'Failed'})), 409
         if my_bucketlist.description != description:
             my_bucketlist.description = description
+        my_bucketlist.date_modified = datetime.datetime.utcnow()
         my_bucketlist.save()
         response = my_bucketlist.to_json()
         return make_response(jsonify(response)), 200

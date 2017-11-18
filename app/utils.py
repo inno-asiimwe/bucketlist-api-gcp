@@ -44,17 +44,11 @@ def validate_login_data(func):
 def check_bucketlist_item_data(func):
     """Decorator for validating bucketlist/item data"""
     @wraps(func)
-    def validate_data(*args, **kwargs):
+    def validate_bucketlist_item_data(*args, **kwargs):
         """Decorated function for validating bucketlist/item data"""
         bucketlist_data = request.data
         if not bucketlist_data or 'description' not in bucketlist_data \
                 or 'name' not in bucketlist_data:
             return make_response(jsonify({'message': 'Invalid payload'})), 400
         return func(*args, **kwargs)
-    return validate_data
-
-
-def validate_fields(field1, field2, collection=None):
-    """Function validates fields"""
-    if not collection or field1 not in collection or field2 not in collection:
-        return make_response(jsonify({'message': 'Invalid payload'})), 400
+    return validate_bucketlist_item_data

@@ -39,11 +39,9 @@
 
 ## Heroku link
         https://inno-bucketlist-api.herokuapp.com
-        
-## Documentation 
 
-Documentation for the api can be found at the following urls:
-        local: http://127.0.0.1:5000/apidocs/
-        Heroku: https://inno-bucketlist-api.herokuapp.com/apidocs/
+## Documentation 
+        http://127.0.0.1:5000/apidocs/
+        https://inno-bucketlist-api.herokuapp.com/apidocs/
 
 

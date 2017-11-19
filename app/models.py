@@ -121,7 +121,7 @@ class Bucketlist(db.Model):
             'owner': self.owner,
             'date_created': self.date_created,
             'date_modified': self.date_modified,
-            'items': [item.to_json() for item in self.items]
+            'items': {item.id: item.to_json() for item in self.items}
         }
         return json_data
 

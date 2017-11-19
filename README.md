@@ -14,17 +14,17 @@
 ## How to install
 1. Clone repository
 2. Install dependencies
-        pip install -r requirements.txt
+```pip install -r requirements.txt```
 3. Make sure PostgreSQL server is installed and running
 4. create database
-        $ psql --user postgres
-        postgres=# create database flask_api;
+```$ psql --user postgres```
+```postgres=# create database flask_api;```
 3. Initialise db and run migrations to create the necessary tables
-        manage.py db init
-        manage.py db migrate
-        manage.py db upgrade
+```manage.py db init```
+```manage.py db migrate```
+```manage.py db upgrade```
 4. Run application using 
-        python run.py
+```python run.py```
 
 ## Features implemented
 * User registration

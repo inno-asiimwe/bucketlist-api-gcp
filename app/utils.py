@@ -38,7 +38,11 @@ def validate_fields(field1, field2):
             data = request.data
             if not data or field1 not in data \
                     or field2 not in data:
-                return make_response(jsonify({'message': 'Invalid payload'})), 400
+                return make_response(
+                    jsonify({
+                        'message': 'Invalid payload'
+                        })
+                    ), 400
             return func(*args, **kwargs)
         return validate_input_data
     return check_data

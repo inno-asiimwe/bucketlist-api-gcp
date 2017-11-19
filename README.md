@@ -14,13 +14,17 @@
 ## How to install
 1. Clone repository
 2. Install dependencies
-   ``` pip install -r requirements.txt ```
-3. create database
-    ``` manage.py db init ```
-    ``` manage.py db migrate ```
-    ``` manage.py db upgrade ```
-3. Run application using 
-   ``` python run.py ```
+```pip install -r requirements.txt```
+3. Make sure PostgreSQL server is installed and running
+4. create database
+```$ psql --user postgres```
+```postgres=# create database flask_api;```
+3. Initialise db and run migrations to create the necessary tables
+```manage.py db init```
+```manage.py db migrate```
+```manage.py db upgrade```
+4. Run application using 
+```python run.py```
 
 ## Features implemented
 * User registration
@@ -33,9 +37,11 @@
 ## Running Tests
    ``` nosetests ```
 
-## Documentation 
+## Heroku link
+        https://inno-bucketlist-api.herokuapp.com
 
-Documentation for the api can be found at the following urls:
-``` http://127.0.0.1:5000/apidocs/ ```
+## Documentation 
+        http://127.0.0.1:5000/apidocs/
+        https://inno-bucketlist-api.herokuapp.com/apidocs/
 
 

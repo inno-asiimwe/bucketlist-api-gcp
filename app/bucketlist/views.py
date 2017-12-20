@@ -97,16 +97,28 @@ def get_bucketlists(user):
             Bucketlist.name.ilike("%" + query + "%"),
             Bucketlist.owner == user['user_id']
         ).paginate(int(page), int(limit), False)
-        response = [
-            bucketlist.to_json() for bucketlist in user_bucketlists.items
-            ]
+        response = {
+            'items': [
+                bucketlist.to_json() for bucketlist in user_bucketlists.items
+                ],
+            'pages': user_bucketlists.pages,
+            'next_page': user_bucketlists.next_num,
+            'current_page': user_bucketlists.page,
+            'prev_page': user_bucketlists.prev_num
+        }
         return make_response(jsonify(response)), 200
     if limit and page:
         user_bucketlists = Bucketlist.query.filter_by(
             owner=user['user_id']).paginate(int(page), int(limit), False)
-        response = [
-            bucketlist.to_json() for bucketlist in user_bucketlists.items
-            ]
+        response = {
+            'items': [
+                bucketlist.to_json() for bucketlist in user_bucketlists.items
+                ],
+            'pages': user_bucketlists.pages,
+            'next_page': user_bucketlists.next_num,
+            'current_page': user_bucketlists.page,
+            'prev_page': user_bucketlists.prev_num
+        }
         return make_response(jsonify(response)), 200
     if limit:
         user_bucketlists = Bucketlist.query.filter_by(

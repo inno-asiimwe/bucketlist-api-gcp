@@ -78,7 +78,7 @@ def register_user():
             user.save()
 
             response = {
-                'message': 'Successfully registered!',
+                'message': 'Successfully registered!, go home to Login',
                 'status': 'Success'
             }
             return make_response(jsonify(response)), 201

@@ -263,7 +263,11 @@ def edit_bucketlist(user, b_id):
             if not duplicate:
                 my_bucketlist.name = name
             else:
-                return make_response(jsonify({'status': 'Failed'})), 409
+                response = {
+                    'status': 'Failed',
+                    'message': 'Name already exists'
+                }
+                return make_response(jsonify(response)), 409
         if my_bucketlist.description != description:
             my_bucketlist.description = description
         my_bucketlist.date_modified = datetime.datetime.utcnow()

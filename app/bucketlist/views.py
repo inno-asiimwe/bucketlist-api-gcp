@@ -97,16 +97,28 @@ def get_bucketlists(user):
             Bucketlist.name.ilike("%" + query + "%"),
             Bucketlist.owner == user['user_id']
         ).paginate(int(page), int(limit), False)
-        response = [
-            bucketlist.to_json() for bucketlist in user_bucketlists.items
-            ]
+        response = {
+            'items': [
+                bucketlist.to_json() for bucketlist in user_bucketlists.items
+                ],
+            'pages': user_bucketlists.pages,
+            'next_page': user_bucketlists.next_num,
+            'current_page': user_bucketlists.page,
+            'prev_page': user_bucketlists.prev_num
+        }
         return make_response(jsonify(response)), 200
     if limit and page:
         user_bucketlists = Bucketlist.query.filter_by(
             owner=user['user_id']).paginate(int(page), int(limit), False)
-        response = [
-            bucketlist.to_json() for bucketlist in user_bucketlists.items
-            ]
+        response = {
+            'items': [
+                bucketlist.to_json() for bucketlist in user_bucketlists.items
+                ],
+            'pages': user_bucketlists.pages,
+            'next_page': user_bucketlists.next_num,
+            'current_page': user_bucketlists.page,
+            'prev_page': user_bucketlists.prev_num
+        }
         return make_response(jsonify(response)), 200
     if limit:
         user_bucketlists = Bucketlist.query.filter_by(
@@ -263,7 +275,11 @@ def edit_bucketlist(user, b_id):
             if not duplicate:
                 my_bucketlist.name = name
             else:
-                return make_response(jsonify({'status': 'Failed'})), 409
+                response = {
+                    'status': 'Failed',
+                    'message': 'Name already exists'
+                }
+                return make_response(jsonify(response)), 409
         if my_bucketlist.description != description:
             my_bucketlist.description = description
         my_bucketlist.date_modified = datetime.datetime.utcnow()
@@ -354,6 +370,92 @@ def create_bucketlist_item(user, b_id):
         'user': user['user_id']
     }
     return make_response(jsonify(response)), 404
+
+
+@bucketlist_blueprint.route('/<int:b_id>/items', methods=['GET'])
+@auth_required
+def get_bucketlist_item(user, b_id):
+    """Retrieve bucketlists
+    ---
+    tags:
+     - "bucketlists"
+    parameters:
+      - in: "header"
+        name: "Authorization"
+        description: "Token of logged in user"
+        required: true
+        type: string
+      - in: "body"
+        name: "body"
+        description: "Name and description of bucketlist items"
+        schema:
+         type: "object"
+         required:
+          - name
+          - description
+         properties:
+          name:
+           type: "string"
+          description:
+           type: "string"
+    responses:
+        400:
+            description: "Failed"
+        200:
+            description: "success"
+     """
+    query = request.args.get('q')
+    limit = request.args.get('limit')
+    page = request.args.get('page')
+    bucketlist = Bucketlist.query.filter_by(id=b_id,
+                                            owner=user['user_id']
+                                            ).first()
+
+    if query and limit and page:
+        bucketlist_items = Item.query.filter(
+            Item.name.ilike("%" + query + "%"),
+            Item.bucketlist_id == b_id
+        ).paginate(int(page), int(limit), False)
+        response = {
+            'items': [
+                item.to_json() for item in bucketlist_items.items
+                ],
+            'pages': bucketlist_items.pages,
+            'next_page': bucketlist_items.next_num,
+            'current_page': bucketlist_items.page,
+            'prev_page': bucketlist_items.prev_num,
+            'bucketlist': bucketlist.to_json()
+        }
+        return make_response(jsonify(response)), 200
+    if limit and page:
+        bucketlist_items = Item.query.filter_by(
+            bucketlist_id=b_id).paginate(int(page), int(limit), False)
+        response = {
+            'items': [
+                item.to_json() for item in bucketlist_items.items
+                ],
+            'pages': bucketlist_items.pages,
+            'next_page': bucketlist_items.next_num,
+            'current_page': bucketlist_items.page,
+            'prev_page': bucketlist_items.prev_num,
+            'bucketlist': bucketlist.to_json()
+        }
+        return make_response(jsonify(response)), 200
+    if limit:
+        bucketlist_items = Item.query.filter_by(
+            bucketlist_id=b_id).limit(int(limit))
+        response = [item.to_json() for item in bucketlist_items]
+        return make_response(jsonify(response)), 200
+    if query:
+        bucketlist_items = Item.query.filter(
+            Item.name.ilike("%" + query + "%"),
+            Item.bucketlist_id == b_id
+        ).all()
+        response = [item.to_json() for item in bucketlist_items]
+        return make_response(jsonify(response)), 200
+    bucketlist_items = Item.get_all_items(b_id)
+    response = [item.to_json() for item in bucketlist_items]
+    return make_response(jsonify(response)), 200
 
 
 @bucketlist_blueprint.route('/<int:b_id>/items/<int:i_id>', methods=['PUT'])

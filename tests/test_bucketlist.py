@@ -771,7 +771,7 @@ class TestBucketlist(BaseTestCase):
             self.assertEqual(res_bucketlist2.status_code, 201)
             self.assertEqual(res_bucketlist3.status_code, 201)
             self.assertEqual(response.status_code, 200)
-            self.assertEqual(2, len(data))
+            self.assertEqual(2, len(data['items']))
 
     def test_pagination_page_access(self):
         """Tests API can paginate results"""
@@ -822,4 +822,5 @@ class TestBucketlist(BaseTestCase):
             self.assertEqual(res_bucketlist2.status_code, 201)
             self.assertEqual(res_bucketlist3.status_code, 201)
             self.assertEqual(response.status_code, 200)
-            self.assertEqual(2, len(data))
+            self.assertEqual(2, len(data['items']))
+           

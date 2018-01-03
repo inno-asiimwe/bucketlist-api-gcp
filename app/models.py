@@ -86,7 +86,8 @@ class Bucketlist(db.Model):
     """Class to define the bucketlists table"""
     __tablename__ = 'bucketlists'
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(256), nullable=False, unique=True)
+    name_to_compare = db.Column(db.String(256), nullable=False, unique=True)
+    name = db.Column(db.String(256), nullable=False)
     description = db.Column(db.Text)
     date_created = db.Column(db.DateTime, default=datetime.datetime.utcnow())
     date_modified = db.Column(db.DateTime)
@@ -99,6 +100,7 @@ class Bucketlist(db.Model):
     def __init__(self, name, description, owner):
         """Initialising the bucketlist"""
         self.name = name
+        self.name_to_compare = ''.join(name.lower().split())
         self.description = description
         self.owner = owner
 
@@ -139,7 +141,8 @@ class Item(db.Model):
     """Class to define the Items table"""
     __tablename__ = 'items'
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(256), nullable=False, unique=True)
+    name = db.Column(db.String(256), nullable=False)
+    name_to_compare = db.Column(db.String(256), nullable=False, unique=True)
     description = db.Column(db.Text)
     bucketlist_id = db.Column(
         db.Integer,
@@ -148,6 +151,7 @@ class Item(db.Model):
     def __init__(self, name, description, bucketlist_id):
         """Initialising an item"""
         self.name = name
+        self.name_to_compare = ''.join(name.lower().split())
         self.description = description
         self.bucketlist_id = bucketlist_id
 

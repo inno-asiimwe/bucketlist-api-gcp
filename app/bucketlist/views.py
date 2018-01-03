@@ -104,7 +104,9 @@ def get_bucketlists(user):
             'pages': user_bucketlists.pages,
             'next_page': user_bucketlists.next_num,
             'current_page': user_bucketlists.page,
-            'prev_page': user_bucketlists.prev_num
+            'prev_page': user_bucketlists.prev_num,
+            'has_next': user_bucketlists.has_next,
+            'has_prev': user_bucketlists.has_prev
         }
         return make_response(jsonify(response)), 200
     if limit and page:
@@ -117,7 +119,9 @@ def get_bucketlists(user):
             'pages': user_bucketlists.pages,
             'next_page': user_bucketlists.next_num,
             'current_page': user_bucketlists.page,
-            'prev_page': user_bucketlists.prev_num
+            'prev_page': user_bucketlists.prev_num,
+            'has_next': user_bucketlists.has_next,
+            'has_prev': user_bucketlists.has_prev
         }
         return make_response(jsonify(response)), 200
     if limit:
@@ -271,7 +275,9 @@ def edit_bucketlist(user, b_id):
     if my_bucketlist:
         if my_bucketlist.name != name:
             duplicate = Bucketlist.query.filter_by(
-                name=name, owner=user['user_id']).first()
+                name_to_compare=''.join(name.lower().split()),
+                owner=user['user_id']
+                ).first()
             if not duplicate:
                 my_bucketlist.name = name
             else:
@@ -337,7 +343,9 @@ def create_bucketlist_item(user, b_id):
                                                ).first()
     if my_bucketlist:
         item = Item.query.filter_by(
-            bucketlist_id=b_id, name=request.data['name']).first()
+            bucketlist_id=b_id,
+            name_to_compare=''.join(request.data['name'].lower().split())
+            ).first()
         if not item:
             try:
                 new_item = Item(
@@ -424,7 +432,9 @@ def get_bucketlist_item(user, b_id):
             'next_page': bucketlist_items.next_num,
             'current_page': bucketlist_items.page,
             'prev_page': bucketlist_items.prev_num,
-            'bucketlist': bucketlist.to_json()
+            'bucketlist': bucketlist.to_json(),
+            'has_next': bucketlist_items.has_next,
+            'has_prev': bucketlist_items.has_prev
         }
         return make_response(jsonify(response)), 200
     if limit and page:
@@ -438,7 +448,9 @@ def get_bucketlist_item(user, b_id):
             'next_page': bucketlist_items.next_num,
             'current_page': bucketlist_items.page,
             'prev_page': bucketlist_items.prev_num,
-            'bucketlist': bucketlist.to_json()
+            'bucketlist': bucketlist.to_json(),
+            'has_next': bucketlist_items.has_next,
+            'has_prev': bucketlist_items.has_prev
         }
         return make_response(jsonify(response)), 200
     if limit:
@@ -500,7 +512,9 @@ def edit_bucketlist_item(user, b_id, i_id):
     if my_item:
         if name and (my_item.name != name):
             duplicate = Item.query.filter_by(
-                name=request.data['name'], bucketlist_id=b_id).first()
+                name_to_compare=''.join(request.data['name'].lower().split()),
+                bucketlist_id=b_id
+                ).first()
             if not duplicate:
                 my_item.name = request.data['name']
             else:

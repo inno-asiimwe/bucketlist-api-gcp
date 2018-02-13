@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: af67c803c17f
+Revision ID: 8e39bc272cd3
 Revises: 
-Create Date: 2017-10-21 01:06:40.460003
+Create Date: 2018-02-13 11:10:35.125759
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'af67c803c17f'
+revision = '8e39bc272cd3'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -37,21 +37,25 @@ def upgrade():
     )
     op.create_table('bucketlists',
     sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('name_to_compare', sa.String(length=256), nullable=False),
     sa.Column('name', sa.String(length=256), nullable=False),
     sa.Column('description', sa.Text(), nullable=True),
+    sa.Column('date_created', sa.DateTime(), nullable=True),
+    sa.Column('date_modified', sa.DateTime(), nullable=True),
     sa.Column('owner', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['owner'], ['users.id'], ondelete='cascade'),
     sa.PrimaryKeyConstraint('id'),
-    sa.UniqueConstraint('name')
+    sa.UniqueConstraint('name_to_compare')
     )
     op.create_table('items',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('name', sa.String(length=256), nullable=False),
+    sa.Column('name_to_compare', sa.String(length=256), nullable=False),
     sa.Column('description', sa.Text(), nullable=True),
     sa.Column('bucketlist_id', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['bucketlist_id'], ['bucketlists.id'], ondelete='cascade'),
     sa.PrimaryKeyConstraint('id'),
-    sa.UniqueConstraint('name')
+    sa.UniqueConstraint('name_to_compare')
     )
     # ### end Alembic commands ###
 

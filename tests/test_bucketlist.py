@@ -221,7 +221,7 @@ class TestBucketlist(BaseTestCase):
                 '/v1/bucketlists/{}'.format(result['id']),
                 headers=dict(Authorization="Bearer " + access_token),
                 data=json.dumps(dict(
-                    name='Before 30',
+                    name='Before thirty',
                     description='Things to do before age 30'
                 )),
                 content_type='application/json'
@@ -231,7 +231,7 @@ class TestBucketlist(BaseTestCase):
             self.assertEqual(res_login.status_code, 200)
             self.assertEqual(res_post.status_code, 201)
             self.assertEqual(response.status_code, 200)
-            self.assertIn('Before 30', data['name'])
+            self.assertIn('Before thirty', data['name'])
 
     def test_edit_bucketlist_invalid_id(self):
         """Tests API returns 404 for an invalid id"""

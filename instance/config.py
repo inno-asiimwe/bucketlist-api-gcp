@@ -31,7 +31,7 @@ class StagingConfig(Config):
 
 class ProductionConfig(Config):
     """Class for the Production configurations"""
-    DEBUG = True
+    DEBUG = False
     TESTING = False
     SQLALCHEMY_DATABASE_URI = 'postgresql+psycopg2://%s:%s@%s/%s' % (
         os.getenv('DBUSER'), os.getenv('DBPASS'), os.getenv('DBHOST'),

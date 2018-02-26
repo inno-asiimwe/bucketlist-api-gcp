@@ -1,6 +1,6 @@
 # bucketlist-api
 
-[![Build Status](https://travis-ci.org/inno-asiimwe/bucketlist-api.svg?branch=development)](https://travis-ci.org/inno-asiimwe/bucketlist-api)
+[![CircleCI](https://circleci.com/gh/inno-asiimwe/bucketlist-api-gcp/tree/master.svg?style=svg)](https://circleci.com/gh/inno-asiimwe/bucketlist-api-gcp/tree/master)
 [![Coverage Status](https://coveralls.io/repos/github/inno-asiimwe/bucketlist-api/badge.svg?branch=development)](https://coveralls.io/github/inno-asiimwe/bucketlist-api?branch=development)
 [![Maintainability](https://api.codeclimate.com/v1/badges/20719403902bf7b679c5/maintainability)](https://codeclimate.com/github/inno-asiimwe/bucketlist-api/maintainability)
 

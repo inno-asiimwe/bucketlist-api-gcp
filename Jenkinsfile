@@ -14,6 +14,7 @@ pipeline {
                 APP_SETTINGS="testing"
             }
             steps {
+                sh "whoami"
                 sh "sudo apt-get install virtualenv"
                 sh "virtualenv venv"
                 sh "./venv/bin/activate && pip install -r requirements.txt"

@@ -1,16 +1,15 @@
 pipeline {
-    agent none
+    agent {
+        docker {
+            image 'python:3.5-onbuild'
+            args '-u root:root'
+        }
+    }
     environment {
         SECRET="My-secret-a-long-string"
     }
     stages {
         stage('Build') {
-            agent {
-                docker {
-                    image 'python:3.5-onbuild'
-                    args '-u root:root'
-                }
-            }
             environment {
                 APP_SETTINGS="testing"
             }
@@ -22,7 +21,7 @@ pipeline {
         }
         stage('Test') {
             steps {
-                echo 'test'
+                sh 'nosetest --cover-package=app'
             }
         }
     }

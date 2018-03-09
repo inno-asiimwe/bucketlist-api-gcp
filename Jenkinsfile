@@ -8,16 +8,20 @@ pipeline {
             agent {
                 docker {
                     image 'python:3.5-onbuild'
+                    args '-u root:root'
                 }
             }
             environment {
                 APP_SETTINGS="testing"
             }
             steps {
-                sh "apt-get install virtualenv"
-                sh "virtualenv venv"
-                sh "./venv/bin/activate && pip install -r requirements.txt"
+                echo 'clone repo'
+                checkout scm
+                sh 'pip install -r requirements.txt'
             }
+        }
+        stage('Test') {
+            echo Testing
         }
     }
 }

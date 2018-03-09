@@ -19,8 +19,5 @@ pipeline {
                 sh "./venv/bin/activate && pip install -r requirements.txt"
             }
         }
-        stage('Test') {
-
-        }
     }
 }

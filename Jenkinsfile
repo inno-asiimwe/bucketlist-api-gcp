@@ -7,7 +7,7 @@ pipeline {
         stage('Build') {
             agent {
                 docker {
-                    image 'python: 2-alphine'
+                    image 'python:2-alphine'
                 }
             }
             environment {

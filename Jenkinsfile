@@ -7,7 +7,7 @@ pipeline {
         stage('Build') {
             agent {
                 docker {
-                    image 'python:3.7-rc-alphine'
+                    image 'python:3.5-onbuild'
                 }
             }
             environment {

@@ -22,7 +22,7 @@ pipeline {
         }
         stage('Test') {
             steps {
-                sh 'nosetest --cover-package=app'
+                sh 'nosetests --cover-package=app'
             }
         }
     }

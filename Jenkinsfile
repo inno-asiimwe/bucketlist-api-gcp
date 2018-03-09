@@ -18,6 +18,7 @@ pipeline {
                 checkout scm
                 sh 'pip install nose'
                 sh 'pip install -r requirements.txt'
+                sh 'python manage.py db update'
             }
         }
         stage('Test') {

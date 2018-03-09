@@ -16,6 +16,7 @@ pipeline {
             steps {
                 echo 'clone repo'
                 checkout scm
+                sh 'pip install nose'
                 sh 'pip install -r requirements.txt'
             }
         }

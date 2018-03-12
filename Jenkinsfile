@@ -2,7 +2,7 @@ pipeline {
     agent {
         docker {
             image 'python:3.5-onbuild'
-            args '-u root:root'
+            args '-u root:root -p 5432:5432'
         }
     }
     environment {

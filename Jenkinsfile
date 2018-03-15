@@ -1,9 +1,5 @@
 pipeline {
-    agent {
-        docker {
-            dockerfile true
-        }
-    }
+    agent { dockerfile true}
     environment {
         SECRET="My-secret-a-long-string"
     }

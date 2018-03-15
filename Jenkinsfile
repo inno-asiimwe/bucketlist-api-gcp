@@ -1,8 +1,7 @@
 pipeline {
     agent {
         docker {
-            image 'python:3.5-onbuild'
-            args '-u root:root -p 5433:5433'
+            dockerfile true
         }
     }
     environment {

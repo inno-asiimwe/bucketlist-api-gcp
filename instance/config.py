@@ -20,7 +20,7 @@ class TestingConfig(Config):
     """Class for the testing configurations"""
     DEBUG = True
     TESTING = True
-    SQLALCHEMY_DATABASE_URI = 'postgresql://35.196.62.75/circle_test'
+    SQLALCHEMY_DATABASE_URI = 'postgresql://localhost/circle_test'
     TOKEN_TIME = 2
 
 

@@ -13,7 +13,11 @@ pipeline {
                 checkout scm
                 sh 'pip install nose'
                 sh 'pip install -r requirements.txt'
-                sh 'python manage.py db upgrade'
+            }
+            steps {
+                echo 'set up postgres'
+                sh 'chmod 777 ./scripts/pgfile.sh'
+                sh './scripts/pgfile.sh'
             }
         }
         stage('Test') {

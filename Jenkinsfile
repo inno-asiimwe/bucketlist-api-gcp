@@ -20,8 +20,9 @@ pipeline {
         }
         stage('Test') {
             steps {
+                echo python3
                 sh '#!/bin/bash \n '+
-                'nosetests --cover-package=app'
+                'python3 --version'
             }
         }
     }

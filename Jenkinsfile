@@ -20,7 +20,8 @@ pipeline {
         }
         stage('Test') {
             steps {
-                sh 'nosetests --cover-package=app'
+                sh '#!/bin/bash \n '+
+                'nosetests --cover-package=app'
             }
         }
     }

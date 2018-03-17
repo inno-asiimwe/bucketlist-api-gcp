@@ -13,8 +13,6 @@ pipeline {
                 checkout scm
                 sh 'pip install nose'
                 sh 'pip install -r requirements.txt'
-            }
-            steps {
                 echo 'set up postgres'
                 sh 'chmod 777 ./scripts/pgfile.sh'
                 sh './scripts/pgfile.sh'

@@ -22,7 +22,7 @@ pipeline {
             steps {
                 echo 'python3'
                 sh '#!/bin/bash \n '+
-                'python3 --version'
+                'nosetests'
             }
         }
     }

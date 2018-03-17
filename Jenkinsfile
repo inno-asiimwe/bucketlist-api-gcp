@@ -22,7 +22,7 @@ pipeline {
             steps {
                 echo 'python3'
                 sh '#!/bin/bash \n '+
-                'nosetests'
+                'find / -type f -name 'nosetests*' -perm +111 -print -quit'
             }
         }
     }

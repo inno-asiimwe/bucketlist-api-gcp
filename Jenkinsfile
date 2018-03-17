@@ -20,9 +20,9 @@ pipeline {
         }
         stage('Test') {
             steps {
-                echo python3
+                echo 'python3'
                 sh '#!/bin/bash \n '+
-                'python --version'
+                'python3 --version'
             }
         }
     }

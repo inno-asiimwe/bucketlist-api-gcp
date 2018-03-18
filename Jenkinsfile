@@ -20,8 +20,6 @@ pipeline {
         }
         stage('Test') {
             steps {
-                echo 'python3'
-                sh 'easy_install nose'
                 sh '#!/bin/bash \n '+
                 "nosetests"
             }

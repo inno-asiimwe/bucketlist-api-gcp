@@ -20,8 +20,8 @@ pipeline {
         }
         stage('Test') {
             steps {
-                sh 'sudo easy_install nose'
-                sh 'nosetests'
+                sh '#!/bin/bash \n '+
+                   'python3 -m pytest --cov=app app/tests/'
             }
         }
     }

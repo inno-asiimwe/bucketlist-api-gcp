@@ -21,7 +21,7 @@ pipeline {
         stage('Test') {
             steps {
                 sh '#!/bin/bash \n '+
-                "nosetests"
+                'pytest'
             }
         }
     }

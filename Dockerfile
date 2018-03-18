@@ -1,5 +1,5 @@
 # Lets not just use any old version but pick one
-FROM ubuntu:latest
+FROM google/cloud-sdk:latest
 
 USER root
 # This is needed for flow, and the weirdos that built it in ocaml:

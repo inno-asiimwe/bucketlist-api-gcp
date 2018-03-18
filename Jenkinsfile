@@ -21,7 +21,7 @@ pipeline {
         stage('Test') {
             steps {
                 sh '#!/bin/bash \n '+
-                   'python3 -m pytest --cov=app app/tests/'
+                   'python3 -m pytest '
             }
         }
     }

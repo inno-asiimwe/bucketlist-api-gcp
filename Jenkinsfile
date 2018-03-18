@@ -25,9 +25,11 @@ pipeline {
             }
         }
         stage('Deploy') {
-            withCredentials([file(credentialsId:'gcloudsecretkeyfile', variable:'gcloud_service_key_file')]){
-                sh './scripts/deploy.sh'
-            }
+            steps{
+                withCredentials([file(credentialsId:'gcloudsecretkeyfile', variable:'gcloud_service_key_file')]){
+                    sh './scripts/deploy.sh'
+                }
+            } 
         }
     }
 }

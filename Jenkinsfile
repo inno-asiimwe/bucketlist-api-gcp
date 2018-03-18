@@ -20,6 +20,7 @@ pipeline {
         }
         stage('Test') {
             steps {
+                sh 'sudo easy_install nose'
                 sh 'nosetests'
             }
         }

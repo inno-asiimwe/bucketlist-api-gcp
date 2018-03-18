@@ -3,7 +3,7 @@ FROM google/cloud-sdk:latest
 
 USER root
 # This is needed for flow, and the weirdos that built it in ocaml:
-RUN apt-get -y update && apt-get install postgresql postgresql-contrib -y
+RUN apt-get -y update && apt-get install postgresql postgresql-contrib libpq-dev -y
 RUN /etc/init.d/postgresql start
 
 RUN \

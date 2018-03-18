@@ -21,9 +21,9 @@ pipeline {
         stage('Test') {
             steps {
                 echo 'python3'
-                sh 'easy_install'
+                sh 'easy_install nose'
                 sh '#!/bin/bash \n '+
-                "find / -type f -name 'nosetests*'  -print -quit"
+                "nosetests"
             }
         }
     }

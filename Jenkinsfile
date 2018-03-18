@@ -27,6 +27,7 @@ pipeline {
         stage('Deploy') {
             steps{
                 withCredentials([file(credentialsId:'gcloudsecretkeyfile', variable:'gcloud_service_key_file')]){
+                    sh 'chmod 777 ./scripts/deploy.sh'
                     sh './scripts/deploy.sh'
                 }
             } 

@@ -11,7 +11,6 @@ pipeline {
             steps {
                 echo 'clone repo'
                 checkout scm
-                sh 'pip3 install nose'
                 sh 'pip3 install -r requirements.txt'
                 echo 'set up postgres'
                 sh 'chmod 777 ./scripts/pgfile.sh'

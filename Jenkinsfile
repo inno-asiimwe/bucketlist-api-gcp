@@ -11,8 +11,8 @@ pipeline {
             steps {
                 echo 'clone repo'
                 checkout scm
-                sh 'pip install nose'
-                sh 'pip install -r requirements.txt'
+                sh 'pip3 install nose'
+                sh 'pip3 install -r requirements.txt'
                 echo 'set up postgres'
                 sh 'chmod 777 ./scripts/pgfile.sh'
                 sh './scripts/pgfile.sh'
@@ -20,8 +20,7 @@ pipeline {
         }
         stage('Test') {
             steps {
-                sh '#!/bin/bash \n '+
-                'pytest'
+                sh 'nosetests'
             }
         }
     }

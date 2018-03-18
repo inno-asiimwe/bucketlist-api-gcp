@@ -21,8 +21,9 @@ pipeline {
         stage('Test') {
             steps {
                 echo 'python3'
+                sh 'easy_install'
                 sh '#!/bin/bash \n '+
-                "find / -type f -name 'nosetests*' -perm +111 -print -quit"
+                "find / -type f -name 'nosetests*'  -print -quit"
             }
         }
     }

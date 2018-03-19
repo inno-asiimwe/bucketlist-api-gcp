@@ -1,9 +1,9 @@
 # Lets not just use any old version but pick one
-FROM google/cloud-sdk:latest
+FROM ubuntu:latest
 
 USER root
 # This is needed for flow, and the weirdos that built it in ocaml:
-RUN apt-get -y update && apt-get install postgresql postgresql-contrib libpq-dev -y
+RUN apt-get -y update && apt-get install postgresql postgresql-contrib -y
 RUN /etc/init.d/postgresql start
 
 RUN \

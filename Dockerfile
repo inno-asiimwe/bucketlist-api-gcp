@@ -25,3 +25,5 @@ RUN usermod -u 113 jenkins
 USER jenkins
 
 RUN curl https://sdk.cloud.google.com | bash
+
+RUN alias gcloud="/home/jenkins/google-cloud-sdk/bin/gcloud"

@@ -14,6 +14,8 @@ RUN \
   apt-get upgrade -y && \
   rm -rf /var/lib/apt/lists/*
 
+RUN curl -sSL https://sdk.cloud.google.com > /tmp/gcl && bash /tmp/gcl --install-dir=~/gcloud --disable-prompts
+
 
 RUN useradd jenkins --shell /bin/bash --create-home
 RUN echo "jenkins ALL=NOPASSWD: ALL" >> /etc/sudoers
